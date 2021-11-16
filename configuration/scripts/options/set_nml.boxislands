@@ -1,5 +1,5 @@
 npt = 48
-kmt_file = 'boxislands'
+kmt_type = 'boxislands'
 ice_ic = 'default'
 histfreq       = 'd','x','x','x','x'
 grid_type    = 'rectangular'

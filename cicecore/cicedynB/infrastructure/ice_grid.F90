@@ -53,6 +53,7 @@
          gridcpl_file , & !  input file for POP coupling grid info
          grid_file    , & !  input file for POP grid info
          kmt_file     , & !  input file for POP grid info
+         kmt_type     , & !  options are file, default, boxislands
          bathymetry_file, & !  input bathymetry for seabed stress
          bathymetry_format, & ! bathymetry file format (default or pop)
          grid_spacing , & !  default of 30.e3m or set by user in namelist 
@@ -1345,50 +1346,63 @@
 
          if (trim(ew_boundary_type) == 'cyclic') then
 
-            do j = 3,ny_global-2      ! closed top and bottom
-            do i = 1,nx_global        ! open sides
-               work_g1(i,j) = c1    ! NOTE nx_global > 5
-            enddo
-            enddo
+            if (trim(kmt_type) == 'boxislands') then
 
-!!!echmod - create kmt_type instead of using kmt_file
-            if (trim(kmt_file) == 'boxislands') call get_box_kmt(work_g1)
+               call get_box_kmt(work_g1)
+
+            else ! default
+
+               do j = 3,ny_global-2      ! closed top and bottom
+               do i = 1,nx_global        ! open sides
+                  work_g1(i,j) = c1    ! NOTE nx_global > 5
+               enddo
+               enddo
+
+            endif ! kmt_type
 
          elseif (trim(ew_boundary_type) == 'open') then
 
-            ! land in the upper left and lower right corners,
-            ! otherwise open boundaries
-            imid = nint(aint(real(nx_global)/c2))
-            jmid = nint(aint(real(ny_global)/c2))
+            if (trim(kmt_type) == 'boxislands') then
 
-            do j = 3,ny_global-2
-            do i = 3,nx_global-2
-               work_g1(i,j) = c1    ! open central domain
-            enddo
-            enddo
+               call get_box_kmt(work_g1)
 
-            if (nx_global > 5 .and. ny_global > 5) then
+            else ! default
 
-            do j = 1, jmid+2
-            do i = 1, imid+2
-               work_g1(i,j) = c1    ! open lower left corner
-            enddo
-            enddo
+               ! land in the upper left and lower right corners,
+               ! otherwise open boundaries
+               imid = nint(aint(real(nx_global)/c2))
+               jmid = nint(aint(real(ny_global)/c2))
 
-            do j = max(jmid-2,1), ny_global
-            do i = max(imid-2,1), nx_global
-               work_g1(i,j) = c1    ! open upper right corner
-            enddo
-            enddo
+               do j = 3,ny_global-2
+               do i = 3,nx_global-2
+                  work_g1(i,j) = c1    ! open central domain
+               enddo
+               enddo
 
-            endif
+               if (nx_global > 5 .and. ny_global > 5) then
 
-            if (close_boundaries) then
-              work_g1(:, 1:2) = c0
-              work_g1(:, ny_global-1:ny_global) = c0
-              work_g1(1:2, :) = c0
-              work_g1(nx_global-1:nx_global, :) = c0
-            endif
+                  do j = 1, jmid+2
+                  do i = 1, imid+2
+                     work_g1(i,j) = c1    ! open lower left corner
+                  enddo
+                  enddo
+
+                  do j = max(jmid-2,1), ny_global
+                  do i = max(imid-2,1), nx_global
+                     work_g1(i,j) = c1    ! open upper right corner
+                  enddo
+                  enddo
+
+               endif ! > 5x5 grid
+
+               if (close_boundaries) then
+                  work_g1(:, 1:2) = c0
+                  work_g1(:, ny_global-1:ny_global) = c0
+                  work_g1(1:2, :) = c0
+                  work_g1(nx_global-1:nx_global, :) = c0
+               endif
+
+            endif ! kmt_type
 
          elseif (trim(ew_boundary_type) == 'closed') then
 
