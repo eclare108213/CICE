@@ -1351,6 +1351,7 @@
             enddo
             enddo
 
+!!!echmod - create kmt_type instead of using kmt_file
             if (trim(kmt_file) == 'boxislands') call get_box_kmt(work_g1)
 
          elseif (trim(ew_boundary_type) == 'open') then
@@ -1431,9 +1432,9 @@
       
       ! northeast triangle
       k = 0
-      do j = ny_global-3*nyb, ny_global
+      do j = ny_global, ny_global-3*nyb, -1
          k = k+1
-         do i = nx_global, nx_global-3*nxb+k, -1
+         do i = nx_global-3*nxb+k, nx_global
             work(i,j) = c0
          enddo
       enddo
@@ -1445,10 +1446,10 @@
          enddo
       enddo
       do i = 1, 2*nxb
-         do j = ny_global-3*nyb, ny_global-nyb-1
+         do j = ny_global-3*nyb, ny_global-nyb-2
             work(i,j) = c0
          enddo
-         do j = ny_global-nyb, ny_global-nyb+2
+         do j = ny_global-nyb, ny_global-nyb+1
             work(i,j) = c0
          enddo
       enddo
@@ -1463,10 +1464,10 @@
          do i = 2, nxb
             work(i,j) = c0
          enddo
-         do i = 2*nxb+1, 2*nxb+2
+         do i = 2*nxb-1, 2*nxb
             work(i,j) = c0
          enddo
-         do i = 2*nxb+3,4*nxb
+         do i = 2*nxb+2,4*nxb
             work(i,j) = c0
          enddo
       enddo
@@ -1479,22 +1480,23 @@
       enddo
 
       ! X islands
+      ! left triangle
       k = 0
-      do i = 2*nxb, 3*nxb
+      do i = 2*nxb, 4*nxb
          k=k+1
          do j = 10*nyb+k, 14*nyb-k
             work(i,j) = c0
          enddo
       enddo
-
+      ! upper triangle
       k = 0
       do j = 14*nyb, 12*nyb, -1
          k=k+1
-         do i = 2*nxb+2+k, 5*nxb-2-k
+         do i = 2*nxb+2+k, 6*nxb-2-k
             work(i,j) = c0
          enddo
       enddo
-
+      ! diagonal
       k = 0
       do j = 10*nyb, 14*nyb
          k=k+1
@@ -1502,21 +1504,21 @@
             work(i,j) = c0
          enddo
       enddo
-
+      ! lower right triangle
       k = 0
       do j = 12*nyb, 10*nyb, -1
          k=k+1
-         do i = 4*nxb+k, 5*nxb
+         do i = 5*nxb+k, 8*nxb
             work(i,j) = c0
          enddo
       enddo
 
       ! bar islands
       do i = 10*nxb, 16*nxb
-         do j = 4*nyb, 6*nyb
+         do j = 4*nyb, 5*nyb
             work(i,j) = c0
          enddo
-         do j = 6*nyb+1, 8*nyb
+         do j = 6*nyb+2, 8*nyb
             work(i,j) = c0
          enddo
          do j = 8*nyb+2, 8*nyb+3
