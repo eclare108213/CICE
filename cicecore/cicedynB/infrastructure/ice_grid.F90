@@ -1351,6 +1351,8 @@
             enddo
             enddo
 
+            if (trim(kmt_file) == 'boxislands') call get_box_kmt(work_g1)
+
          elseif (trim(ew_boundary_type) == 'open') then
 
             ! land in the upper left and lower right corners,
@@ -1400,6 +1402,129 @@
       deallocate(work_g1)
 
       end subroutine rectgrid
+
+!=======================================================================
+
+      ! Complex land mask for testing box cases
+      ! Requires nx_global, ny_global > 20
+      ! Assumes work array has been initialized to 1 (ocean) and north and
+      ! south land boundaries have been applied (ew_boundary_type='cyclic')
+
+      subroutine get_box_kmt (work)
+
+      use ice_constants, only: c0, c1, c20
+
+      real (kind=dbl_kind), dimension(:,:), intent(inout) :: work
+
+      integer (kind=int_kind) :: &
+         i, j, k, & ! indices
+         nxb, nyb   ! convenient cell-block sizes for building the mask
+
+      character(len=*), parameter :: subname = '(get_box_kmt)'
+
+      ! number of cells in 5% of global grid x and y lengths
+      nxb = int(real(nx_global, dbl_kind) / c20, int_kind)
+      nyb = int(real(ny_global, dbl_kind) / c20, int_kind)
+
+      if (nxb < 1 .or. nyb < 1) &
+         call abort_ice(subname//'ERROR: requires larger grid size')
+      
+      ! northeast triangle
+      k = 0
+      do j = ny_global-3*nyb, ny_global
+         k = k+1
+         do i = nx_global, nx_global-3*nxb+k, -1
+            work(i,j) = c0
+         enddo
+      enddo
+
+      ! northwest docks
+      do j = ny_global-3*nyb, ny_global
+         do i = 1, 1
+            work(i,j) = c0
+         enddo
+      enddo
+      do i = 1, 2*nxb
+         do j = ny_global-3*nyb, ny_global-nyb-1
+            work(i,j) = c0
+         enddo
+         do j = ny_global-nyb, ny_global-nyb+2
+            work(i,j) = c0
+         enddo
+      enddo
+
+      ! southwest docks
+      do j = 2*nyb, 3*nyb
+         do i = 1, 1
+            work(i,j) = c0
+         enddo
+      enddo
+      do j = 1, 2*nyb
+         do i = 2, nxb
+            work(i,j) = c0
+         enddo
+         do i = 2*nxb+1, 2*nxb+2
+            work(i,j) = c0
+         enddo
+         do i = 2*nxb+3,4*nxb
+            work(i,j) = c0
+         enddo
+      enddo
+
+      ! tiny island
+      do j = 14*nyb, 14*nyb+1
+         do i = 14*nxb, 14*nxb+1
+            work(i,j) = c0
+         enddo
+      enddo
+
+      ! X islands
+      k = 0
+      do i = 2*nxb, 3*nxb
+         k=k+1
+         do j = 10*nyb+k, 14*nyb-k
+            work(i,j) = c0
+         enddo
+      enddo
+
+      k = 0
+      do j = 14*nyb, 12*nyb, -1
+         k=k+1
+         do i = 2*nxb+2+k, 5*nxb-2-k
+            work(i,j) = c0
+         enddo
+      enddo
+
+      k = 0
+      do j = 10*nyb, 14*nyb
+         k=k+1
+         do i = 2*nxb+4+k, 2*nxb+6+k
+            work(i,j) = c0
+         enddo
+      enddo
+
+      k = 0
+      do j = 12*nyb, 10*nyb, -1
+         k=k+1
+         do i = 4*nxb+k, 5*nxb
+            work(i,j) = c0
+         enddo
+      enddo
+
+      ! bar islands
+      do i = 10*nxb, 16*nxb
+         do j = 4*nyb, 6*nyb
+            work(i,j) = c0
+         enddo
+         do j = 6*nyb+1, 8*nyb
+            work(i,j) = c0
+         enddo
+         do j = 8*nyb+2, 8*nyb+3
+            work(i,j) = c0
+         enddo
+      enddo
+
+      end subroutine get_box_kmt
 
 !=======================================================================
 
