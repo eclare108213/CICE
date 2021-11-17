@@ -657,7 +657,6 @@
                            field_loc_NEcorner, field_type_vector)
       call grid_average_X2Y('U2TF',strocnxT)    ! shift
       call grid_average_X2Y('U2TF',strocnyT)
-<<<<<<< HEAD
 ! shift velocity components from CD grid locations (N, E) to B grid location (U) for transport
 ! commented out in order to focus on EVP for now within the cdgrid
 ! should be used when routine is ready
