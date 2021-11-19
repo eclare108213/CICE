@@ -1041,7 +1041,7 @@
         str12ew, str12we, str12ns, str12sn        , &
         strp_tmp, strm_tmp, tmp
 
-      logical :: capping ! of the viscous coef
+      real(kind=dbl_kind,parameter :: capping = c1 ! of the viscous coef
       
       character(len=*), parameter :: subname = '(stress)'
 
@@ -1050,7 +1050,6 @@
       !-----------------------------------------------------------------
 
       str(:,:,:) = c0
-      capping = .true. ! could be later included in ice_in
 
       do ij = 1, icellt
          i = indxti(ij)
@@ -1080,16 +1079,37 @@
       ! viscous coefficients and replacement pressure
       !-----------------------------------------------------------------
          
-         call viscous_coeffs_and_rep_pressure (strength(i,j), tinyarea(i,j),&
-                                               Deltane,       Deltanw,      &
-                                               Deltasw,       Deltase,      &
-                                               zetax2ne,      zetax2nw,     &
-                                               zetax2sw,      zetax2se,     &
-                                               etax2ne,       etax2nw,      &
-                                               etax2sw,       etax2se,      &
-                                               rep_prsne,     rep_prsnw,    &
-                                               rep_prssw,     rep_prsse,    &
-                                               capping)
+!         call viscous_coeffs_and_rep_pressure (strength(i,j), tinyarea(i,j),&
+!                                               Deltane,       Deltanw,      &
+!                                               Deltasw,       Deltase,      &
+!                                               zetax2ne,      zetax2nw,     &
+!                                               zetax2sw,      zetax2se,     &
+!                                               etax2ne,       etax2nw,      &
+!                                               etax2sw,       etax2se,      &
+!                                               rep_prsne,     rep_prsnw,    &
+!                                               rep_prssw,     rep_prsse,    &
+!                                               capping)
+
+         call viscous_coeffs_and_rep_pressure_T (strength(i,j), tinyarea(i,j),&
+                                                 Deltane,       zetax2ne,     &
+                                                 etax2ne,       rep_prsne,    &
+                                                 capping)
+ 
+         call viscous_coeffs_and_rep_pressure_T (strength(i,j), tinyarea(i,j),&
+                                                 Deltanw,       zetax2nw,     &
+                                                 etax2nw,       rep_prsnw,    &
+                                                 capping)
+
+         call viscous_coeffs_and_rep_pressure_T (strength(i,j), tinyarea(i,j),&
+                                                 Deltasw,       zetax2sw,     &
+                                                 etax2sw,       rep_prssw,    &
+                                                 capping)
+
+         call viscous_coeffs_and_rep_pressure_T (strength(i,j), tinyarea(i,j),&
+                                                 Deltase,       zetax2se,     &
+                                                 etax2se,       rep_prsse,    &
+                                                 capping)
+
          
       !-----------------------------------------------------------------
       ! the stresses                            ! kg/s^2

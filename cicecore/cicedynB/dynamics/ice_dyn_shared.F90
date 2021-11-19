@@ -605,6 +605,7 @@
       !-----------------------------------------------------------------
 
       icellu = 0
+      if (grid_system == 'B') then
       do j = jlo, jhi
       do i = ilo, ihi
 
@@ -637,7 +638,40 @@
          vvel_init(i,j) = vvel(i,j)
       enddo
       enddo
+    else
+      do j = jlo, jhi
+      do i = ilo, ihi
 
+         ! ice extent mask (U-cells)
+!         iceumask_old(i,j) = iceumask(i,j) ! save
+!         iceumask(i,j) = (umaskCD(i,j)) .and. (aiu  (i,j) > a_min) & 
+!                                      .and. (umass(i,j) > m_min)
+         iceumask(i,j) = umaskCD(i,j) ! SHOULD BE EXTENDED TO CHECK FOR ICE
+         if (iceumask(i,j)) then
+            icellu = icellu + 1
+            indxui(icellu) = i
+            indxuj(icellu) = j
+
+            ! initialize velocity for new ice points to ocean sfc current
+            if (.not. iceumask_old(i,j)) then
+               uvel(i,j) = uocn(i,j)
+               vvel(i,j) = vocn(i,j)
+            endif
+         else
+            ! set velocity and stresses to zero for masked-out points
+            uvel(i,j)    = c0
+            vvel(i,j)    = c0
+            strintx(i,j) = c0
+            strinty(i,j) = c0
+            strocnx(i,j) = c0
+            strocny(i,j) = c0
+         endif
+
+         uvel_init(i,j) = uvel(i,j)
+         vvel_init(i,j) = vvel(i,j)
+      enddo
+      enddo
+    endif
       !-----------------------------------------------------------------
       ! Define variables for momentum equation
       !-----------------------------------------------------------------
@@ -1899,7 +1933,7 @@
       real (kind=dbl_kind), intent(in)::  &  
         Deltane, Deltanw, Deltasw, Deltase  ! Delta at each corner
 
-      logical , intent(in):: capping
+      real(kind=dbl_kind) , intent(in):: capping
       
       real (kind=dbl_kind), intent(out):: &  
         zetax2ne, zetax2nw, zetax2sw, zetax2se,  & ! zetax2 at each corner 
@@ -1913,18 +1947,14 @@
       ! NOTE: for comp. efficiency 2 x zeta and 2 x eta are used in the code
        
 !      if (trim(yield_curve) == 'ellipse') then
-
-      if (capping) then
-         tmpcalcne = strength/max(Deltane,tinyarea)
-         tmpcalcnw = strength/max(Deltanw,tinyarea)
-         tmpcalcsw = strength/max(Deltasw,tinyarea)
-         tmpcalcse = strength/max(Deltase,tinyarea)
-      else
-         tmpcalcne = strength/(Deltane + tinyarea)
-         tmpcalcnw = strength/(Deltanw + tinyarea)
-         tmpcalcsw = strength/(Deltasw + tinyarea)
-         tmpcalcse = strength/(Deltase + tinyarea)
-      endif
+         tmpcalcne = capping*(strength/max(Deltane,  tinyarea))+ &
+                     (1-capping)*strength/(Deltane + tinyarea)   &
+         tmpcalcnw = capping*(strength/max(Deltanw,  tinyarea))+ &
+                     (1-capping)*strength/(Deltanw + tinyarea)   &
+         tmpcalcsw = capping*(strength/max(Deltasw,  tinyarea))+ &
+                     (1-capping)*strength/(Deltasw + tinyarea)  
+         tmpcalcse = capping*(strength/max(Deltase,tinyarea))  + &
+                     (1-capping)*strength/(Deltase + tinyarea)
 
          zetax2ne = (c1+Ktens)*tmpcalcne ! northeast 
          rep_prsne = (c1-Ktens)*tmpcalcne*Deltane
@@ -1961,6 +1991,7 @@
  ! Lemieux, J. F. et al. (2016). Improving the simulation of landfast ice
  ! by combining tensile strength and a parameterization for grounded ridges.
  ! J. Geophys. Res. Oceans, 121, 7354-7368.
+! capping must be 1 (c1) for evp and 0 for vp solver
 
       subroutine viscous_coeffs_and_rep_pressure_T (strength, tinyarea, &
                                                     Delta   , zetax2  , &
@@ -1971,9 +2002,7 @@
         strength, tinyarea
 
       real (kind=dbl_kind), intent(in)::  &
-        Delta
-
-      logical, intent(in):: capping
+        Delta, capping
 
       real (kind=dbl_kind), intent(out):: &
         zetax2, etax2, rep_prs ! 2 x visous coeffs, replacement pressure
@@ -1986,23 +2015,62 @@
 
       ! NOTE: for comp. efficiency 2 x zeta and 2 x eta are used in the code
 
-!      if (trim(yield_curve) == 'ellipse') then
-
-      if (capping) then
-         tmpcalc = strength/max(Delta,tinyarea)
-      else
-         tmpcalc = strength/(Delta + tinyarea)
-      endif
-
+      tmpcalc =     capping *(strength/max(Delta,tinyarea))+ &
+                (c1-capping)*(strength/(Delta + tinyarea))
       zetax2 = (c1+Ktens)*tmpcalc
       rep_prs = (c1-Ktens)*tmpcalc*Delta
       etax2 = epp2i*zetax2
 
-!      else
-
-!      endif
-
        end subroutine viscous_coeffs_and_rep_pressure_T
+
+
+      subroutine viscous_coeffs_and_rep_pressure_T2U (zetax2T_00, zetax2T_01, &
+                                                      zetax2T_11, zetax2T_10, &
+                                                       etax2T_00,  etax2T_01, &
+                                                       etax2T_11,  etax2T_10, & 
+                                                        maskT_00,  maskeT_01, &
+                                                        maskT_11,  maskeT_10, &
+                                                        Tarea_00,   Tarea_01, &
+                                                        Tarea_11,   Tarea_10, &
+                                                        deltaU,               &
+                                                        zetax2U, etax2U,      &
+                                                        rep_prsU
+                              
+
+      real (kind=dbl_kind), intent(in):: &
+        zetax2_00,zetax2_10,zetax2_11,zetax2_01, &
+         etax2_00, etax2_10, etax2_11, etax2_01,  & ! 2 x visous coeffs, replacement pressure
+         maskT_00, maskT_10, maskT_11, maskT_01, &
+         Tarea_00, Tarea_10, Tarea_11, Tarea_01, &
+         deltaU
+
+      real (kind=dbl_kind), intent(out):: zetax2U, etax2U, rep_prsU
+
+      ! local variables
+     
+      real (kind=dbl_kind), :: Totarea
+
+      character(len=*), parameter :: subname = '(viscous_coeffs_and_rep_pressure_T2U)'
+
+      ! NOTE: for comp. efficiency 2 x zeta and 2 x eta are used in the code
+      Totarea=maskT(i,j  )*Tarea(i,j)   + &
+              maskT(i+1,j)*Tarea(i+1,j) + &
+              maskT(i+1,j+1)*Tarea(i+1,j+1) + &
+              maskT(i,j+1)*Tarea(i,j+1)
+              
+      zetax2U = (maskT(i,j)*Tarea(i,j)       *zetax2T(i,j)    + &
+                maskT(i+1,j)*Tarea(i+1,j)    *zetax2T(i+1,j)  + &
+                maskT(i,j+1)*Tarea(i,j+1)    *zetax2T(i,j+1)  + &
+                maskT(i+1,j+1)*Tarea(i+1,j+1)*zetax2T(i+1,j+1))/Totarea
+
+      etax2U =  (maskT(i,j)    * etax2T(i,j)    + &
+                maskT(i+1,j)  * etax2T(i+1,j)     + &
+                maskT(i,j+1)  * etax2T(i,j+1)     + &
+                maskT(i+1,j+1)* etax2T(i+1,j+1))/Totarea
+ 
+      rep_prsU = (c1-ktens)/(1+Ktens)*zetax2U*deltaU
+
+       end subroutine viscous_coeffs_and_rep_pressure_T2U
 
 !=======================================================================
 

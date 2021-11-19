@@ -155,7 +155,7 @@
       real (kind=dbl_kind), dimension (:,:,:), allocatable, public :: &
          hm     , & ! land/boundary mask, thickness (T-cell)
          bm     , & ! task/block id
-         uvm    , & ! land/boundary mask, velocity (U-cell)
+         uvm    , & ! land/boundary mask, velocity (U-cell) - land if one point is one
          npm    , & ! land/boundary mask (N-cell)
          epm    , & ! land/boundary mask (E-cell)
          kmt        ! ocean topography mask for bathymetry (T-cell)
@@ -167,7 +167,8 @@
       logical (kind=log_kind), &
          dimension (:,:,:), allocatable, public :: &
          tmask  , & ! land/boundary mask, thickness (T-cell)
-         umask  , & ! land/boundary mask, velocity (U-cell)
+         umask  , & ! land/boundary mask, velocity (U-cell)    (calc point if all point is ocean)
+         umaskCD, & ! land/boundary mask, velocity (U-cell) (calc point if one point is ocean)
          nmask  , & ! land/boundary mask, (N-cell)
          emask  , & ! land/boundary mask, (E-cell)
          lmask_n, & ! northern hemisphere mask
@@ -239,12 +240,13 @@
          yyav     (nx_block,ny_block,max_blocks), & ! mean T-cell value of yy
          hm       (nx_block,ny_block,max_blocks), & ! land/boundary mask, thickness (T-cell)
          bm       (nx_block,ny_block,max_blocks), & ! task/block id
-         uvm      (nx_block,ny_block,max_blocks), & ! land/boundary mask, velocity (U-cell)
+         uvm      (nx_block,ny_block,max_blocks), & ! land/boundary mask, velocity (U-cell) - water in case of all water point
          npm      (nx_block,ny_block,max_blocks), & ! land/boundary mask (N-cell)
          epm      (nx_block,ny_block,max_blocks), & ! land/boundary mask (E-cell)
          kmt      (nx_block,ny_block,max_blocks), & ! ocean topography mask for bathymetry (T-cell)
          tmask    (nx_block,ny_block,max_blocks), & ! land/boundary mask, thickness (T-cell)
          umask    (nx_block,ny_block,max_blocks), & ! land/boundary mask, velocity (U-cell)
+         umaskCD (nx_block,ny_block,max_blocks),  & ! land/boundary mask, velocity (U-cell)
          nmask    (nx_block,ny_block,max_blocks), & ! land/boundary mask (N-cell)
          emask    (nx_block,ny_block,max_blocks), & ! land/boundary mask (E-cell)
          lmask_n  (nx_block,ny_block,max_blocks), & ! northern hemisphere mask
@@ -1925,7 +1927,7 @@
 
       subroutine makemask
 
-      use ice_constants, only: c0, p5, &
+      use ice_constants, only: c0, p5, c1p5&
           field_loc_center, field_loc_NEcorner, field_type_scalar, &
           field_loc_Nface, field_loc_Eface
 
@@ -1935,6 +1937,9 @@
 
       real (kind=dbl_kind) :: &
          puny
+
+      real (kind=dbl_kind) :: &
+            uvmCD
 
       type (block) :: &
          this_block           ! block information for current block
@@ -1999,14 +2004,18 @@
          jhi = this_block%jhi
 
          ! needs to cover halo (no halo update for logicals)
-         tmask(:,:,iblk) = .false.
-         umask(:,:,iblk) = .false.
-         nmask(:,:,iblk) = .false.
-         emask(:,:,iblk) = .false.
+         tmask(:,:,iblk)    = .false.
+         umask(:,:,iblk)    = .false.
+         umaskCD(:,:,iblk) = .false.
+         nmask(:,:,iblk)    = .false.
+         emask(:,:,iblk)    = .false.
          do j = jlo-nghost, jhi+nghost
          do i = ilo-nghost, ihi+nghost
             if ( hm(i,j,iblk) > p5) tmask(i,j,iblk) = .true.
             if (uvm(i,j,iblk) > p5) umask(i,j,iblk) = .true.
+            uvmCD = (hm(i,j,  iblk)+hm(i+1,j,  iblk)+
+                     hm(i,j+1,iblk)+hm(i+1,j+1,iblk))
+            if (uvmCD > c1p5) umaskCD(i,j,iblk) = .true.
             if (npm(i,j,iblk) > p5) nmask(i,j,iblk) = .true.
             if (epm(i,j,iblk) > p5) emask(i,j,iblk) = .true.
          enddo
