@@ -133,7 +133,7 @@
           stressp_1, stressp_2, stressp_3, stressp_4, &
           stressm_1, stressm_2, stressm_3, stressm_4, &
           stress12_1, stress12_2, stress12_3, stress12_4
-      use ice_grid, only: tmask, umask, dxt, dyt, dxhy, dyhx, cxp, cyp, cxm, cym, &
+      use ice_grid, only: tmask, umask, umaskCD, dxt, dyt, dxhy, dyhx, cxp, cyp, cxm, cym, &
           tarear, uarear, grid_average_X2Y!, grid_system commented out until implementation of cd-grid
       use ice_state, only: aice, vice, vsno, uvel, vvel, divu, shear, &
           aice_init, aice0, aicen, vicen, strength !, uvelE, vvelN grid_system commented out until implementation of cd-grid
@@ -301,7 +301,7 @@
                          indxui      (:,iblk), indxuj      (:,iblk), & 
                          aiu       (:,:,iblk), umass     (:,:,iblk), & 
                          umassdti  (:,:,iblk), fcor_blk  (:,:,iblk), & 
-                         umask     (:,:,iblk),                       & 
+                         umask     (:,:,iblk), umaskCD   (:,:,iblk), & 
                          uocn      (:,:,iblk), vocn      (:,:,iblk), & 
                          strairx   (:,:,iblk), strairy   (:,:,iblk), & 
                          ss_tltx   (:,:,iblk), ss_tlty   (:,:,iblk), &  

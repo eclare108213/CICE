@@ -98,11 +98,11 @@
           stress12_1, stress12_2, stress12_3, stress12_4, &
           stresspT, stressmT, stress12T, &
           stresspU, stressmU, stress12U
-      use ice_grid, only: tmask, umask, nmask, emask, uvm, epm, npm, &
+      use ice_grid, only: hm, tmask, umask, umaskCD, nmask, emask, uvm, epm, npm, &
           dxe, dxn, dxt, dxu, dye, dyn, dyt, dyu, &
           ratiodxN, ratiodxNr, ratiodyE, ratiodyEr, & 
           dxhy, dyhx, cxp, cyp, cxm, cym, &
-          tarear, uarear, earea, narea, tinyarea, grid_average_X2Y, &
+          tarear, uarear, earea, narea, tinyarea, grid_average_X2Y, tarea, &
           grid_type, grid_system
       use ice_state, only: aice, vice, vsno, uvel, vvel, uvelN, vvelN, &
           uvelE, vvelE, divu, shear, &
@@ -349,7 +349,7 @@
                          indxui      (:,iblk), indxuj      (:,iblk), & 
                          aiu       (:,:,iblk), umass     (:,:,iblk), & 
                          umassdti  (:,:,iblk), fcor_blk  (:,:,iblk), & 
-                         umask     (:,:,iblk),                       & 
+                         umask     (:,:,iblk), umaskCD   (:,:,iblk), & 
                          uocn      (:,:,iblk), vocn      (:,:,iblk), & 
                          strairx   (:,:,iblk), strairy   (:,:,iblk), & 
                          ss_tltx   (:,:,iblk), ss_tlty   (:,:,iblk), &  
@@ -412,8 +412,8 @@
                          indxti      (:,iblk), indxtj      (:,iblk), & 
                          indxni      (:,iblk), indxnj      (:,iblk), & 
                          aiN       (:,:,iblk), nmass     (:,:,iblk), & 
-                         nmassdti  (:,:,iblk), fcorN_blk  (:,:,iblk), & 
-                         nmask     (:,:,iblk),                       & 
+                         nmassdti  (:,:,iblk), fcorN_blk  (:,:,iblk),& 
+                         nmask     (:,:,iblk), nmask     (:,:,iblk), &                       
                          uocnN     (:,:,iblk), vocnN     (:,:,iblk), & 
                          strairxN  (:,:,iblk), strairyN  (:,:,iblk), & 
                          ss_tltxN  (:,:,iblk), ss_tltyN  (:,:,iblk), &  
@@ -445,8 +445,8 @@
                          indxti      (:,iblk), indxtj      (:,iblk), & 
                          indxei      (:,iblk), indxej      (:,iblk), & 
                          aiE       (:,:,iblk), emass     (:,:,iblk), & 
-                         emassdti  (:,:,iblk), fcorE_blk  (:,:,iblk), & 
-                         emask     (:,:,iblk),                       & 
+                         emassdti  (:,:,iblk), fcorE_blk  (:,:,iblk),& 
+                         emask     (:,:,iblk),  emask     (:,:,iblk),& 
                          uocnE     (:,:,iblk), vocnE     (:,:,iblk), & 
                          strairxE  (:,:,iblk), strairyE  (:,:,iblk), & 
                          ss_tltxE  (:,:,iblk), ss_tltyE  (:,:,iblk), &  
@@ -691,7 +691,7 @@
                                  ratiodxN  (:,:,iblk), ratiodxNr (:,:,iblk), &
                                  ratiodyE  (:,:,iblk), ratiodyEr (:,:,iblk), &
                                  epm       (:,:,iblk), npm       (:,:,iblk), &
-                                 uvm       (:,:,iblk),                       &
+                                 hm        (:,:,iblk), uvm       (:,:,iblk), &
                                  zetax2T   (:,:,iblk), etax2T    (:,:,iblk), &
                                  stresspU  (:,:,iblk), stressmU  (:,:,iblk), &
                                  stress12U (:,:,iblk))                       
@@ -1041,7 +1041,7 @@
         str12ew, str12we, str12ns, str12sn        , &
         strp_tmp, strm_tmp, tmp
 
-      real(kind=dbl_kind,parameter :: capping = c1 ! of the viscous coef
+      real(kind=dbl_kind),parameter :: capping = c1 ! of the viscous coef
       
       character(len=*), parameter :: subname = '(stress)'
 
@@ -1365,15 +1365,14 @@
         divT, tensionT, shearT, DeltaT, & ! strain rates at T point
         rep_prsT                          ! replacement pressure at T point
 
-      logical :: capping ! of the viscous coef
-      
+        real(kind=dbl_kind),parameter :: capping = c1 ! of the viscous coef
+ 
       character(len=*), parameter :: subname = '(stress_T)'
 
       !-----------------------------------------------------------------
       ! Initialize
       !-----------------------------------------------------------------
 
-      capping = .true. ! could be later included in ice_in
 
       do ij = 1, icellt
          i = indxti(ij)
@@ -1457,7 +1456,7 @@
                              dxU,        dyU,       &
                              ratiodxN,   ratiodxNr, &
                              ratiodyE,   ratiodyEr, &
-                             epm,  npm,  uvm,       &
+                             epm,  npm, hm, uvm,    &
                              zetax2T,    etax2T,    &
                              stresspU,   stressmU,  & 
                              stress12U              )
@@ -1491,6 +1490,7 @@
          ratiodyEr, & ! -dyE(i,j)/dyE(i,j+1) for BCs
          epm      , & ! E-cell mask
          npm      , & ! E-cell mask
+         hm       , & ! T-cell mask
          uvm      , & ! U-cell mask
          zetax2T  , & ! 2*zeta at the T point
          etax2T       ! 2*eta at the T point

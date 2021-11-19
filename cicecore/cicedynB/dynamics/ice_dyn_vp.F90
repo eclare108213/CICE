@@ -199,7 +199,7 @@
           stressp_1, stressp_2, stressp_3, stressp_4, &
           stressm_1, stressm_2, stressm_3, stressm_4, &
           stress12_1, stress12_2, stress12_3, stress12_4
-      use ice_grid, only: tmask, umask, dxt, dyt, cxp, cyp, cxm, cym, &
+      use ice_grid, only: tmask, umask, umaskCD, dxt, dyt, cxp, cyp, cxm, cym, &
           tarear, grid_type, grid_average_X2Y !, grid_system commented out until implementation of c grid
       use ice_state, only: aice, vice, vsno, uvel, vvel, divu, shear, &
           aice_init, aice0, aicen, vicen, strength!, uvelE, vvelN ommented out until implementation of c grid
@@ -366,7 +366,7 @@
                          indxui      (:,iblk), indxuj      (:,iblk), &
                          aiu       (:,:,iblk), umass     (:,:,iblk), &
                          umassdti  (:,:,iblk), fcor_blk  (:,:,iblk), &
-                         umask     (:,:,iblk),                       &
+                         umask     (:,:,iblk), umaskCD   (:,:,iblk), &
                          uocn      (:,:,iblk), vocn      (:,:,iblk), &
                          strairx   (:,:,iblk), strairy   (:,:,iblk), &
                          ss_tltx   (:,:,iblk), ss_tlty   (:,:,iblk), &
@@ -1202,13 +1202,11 @@
         stressp_1, stressp_2, stressp_3, stressp_4    , &
         strp_tmp
 
-      logical :: capping ! of the viscous coeff
-
+      real(kind=dbl_kind) ,parameter :: capping = c0 ! of the viscous coef
       character(len=*), parameter :: subname = '(calc_zeta_dPr)'
 
       ! Initialize
 
-      capping = .false.
       
       ! Initialize stPr, zetax2 and etax2 to zero
       ! (for cells where icetmask is false)

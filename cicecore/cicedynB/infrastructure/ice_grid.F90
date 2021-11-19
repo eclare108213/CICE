@@ -1927,7 +1927,7 @@
 
       subroutine makemask
 
-      use ice_constants, only: c0, p5, c1p5&
+      use ice_constants, only: c0, p5, c1p5, &
           field_loc_center, field_loc_NEcorner, field_type_scalar, &
           field_loc_Nface, field_loc_Eface
 
@@ -2013,7 +2013,7 @@
          do i = ilo-nghost, ihi+nghost
             if ( hm(i,j,iblk) > p5) tmask(i,j,iblk) = .true.
             if (uvm(i,j,iblk) > p5) umask(i,j,iblk) = .true.
-            uvmCD = (hm(i,j,  iblk)+hm(i+1,j,  iblk)+
+            uvmCD = (hm(i,j,  iblk)+hm(i+1,j,  iblk)+ &
                      hm(i,j+1,iblk)+hm(i+1,j+1,iblk))
             if (uvmCD > c1p5) umaskCD(i,j,iblk) = .true.
             if (npm(i,j,iblk) > p5) nmask(i,j,iblk) = .true.

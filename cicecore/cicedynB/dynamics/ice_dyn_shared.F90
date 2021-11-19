@@ -453,7 +453,7 @@
                             indxui,     indxuj,     & 
                             aiu,        umass,      & 
                             umassdti,   fcor,       & 
-                            umask,                  & 
+                            umask,      umaskCD,    & 
                             uocn,       vocn,       & 
                             strairx,    strairy,    & 
                             ss_tltx,    ss_tlty,    &  
@@ -490,7 +490,7 @@
          indxuj       ! compressed index in j-direction
 
       logical (kind=log_kind), dimension (nx_block,ny_block), intent(in) :: &
-         umask       ! land/boundary mask, thickness (U-cell)
+         umask, umaskCD       ! land/boundary mask, thickness (U-cell)
 
       integer (kind=int_kind), dimension (nx_block,ny_block), intent(in) :: &
          icetmask    ! ice extent mask (T-cell)
@@ -1949,9 +1949,9 @@
        
 !      if (trim(yield_curve) == 'ellipse') then
          tmpcalcne = capping*(strength/max(Deltane,  tinyarea))+ &
-                     (1-capping)*strength/(Deltane + tinyarea)   &
+                     (1-capping)*strength/(Deltane + tinyarea)   
          tmpcalcnw = capping*(strength/max(Deltanw,  tinyarea))+ &
-                     (1-capping)*strength/(Deltanw + tinyarea)   &
+                     (1-capping)*strength/(Deltanw + tinyarea)   
          tmpcalcsw = capping*(strength/max(Deltasw,  tinyarea))+ &
                      (1-capping)*strength/(Deltasw + tinyarea)  
          tmpcalcse = capping*(strength/max(Deltase,tinyarea))  + &
@@ -2029,18 +2029,18 @@
                                                       zetax2T_11, zetax2T_10, &
                                                        etax2T_00,  etax2T_01, &
                                                        etax2T_11,  etax2T_10, & 
-                                                        maskT_00,  maskeT_01, &
-                                                        maskT_11,  maskeT_10, &
+                                                        maskT_00,  maskT_01, &
+                                                        maskT_11,  maskT_10, &
                                                         Tarea_00,   Tarea_01, &
                                                         Tarea_11,   Tarea_10, &
                                                         deltaU,               &
                                                         zetax2U, etax2U,      &
-                                                        rep_prsU
+                                                        rep_prsU)
                               
 
       real (kind=dbl_kind), intent(in):: &
-        zetax2_00,zetax2_10,zetax2_11,zetax2_01, &
-         etax2_00, etax2_10, etax2_11, etax2_01,  & ! 2 x visous coeffs, replacement pressure
+        zetax2T_00,zetax2T_10,zetax2T_11,zetax2T_01, &
+         etax2T_00, etax2T_10, etax2T_11, etax2T_01,  & ! 2 x visous coeffs, replacement pressure
          maskT_00, maskT_10, maskT_11, maskT_01, &
          Tarea_00, Tarea_10, Tarea_11, Tarea_01, &
          deltaU
@@ -2049,25 +2049,26 @@
 
       ! local variables
      
-      real (kind=dbl_kind), :: Totarea
+      real (kind=dbl_kind) :: &
+           Totarea
 
       character(len=*), parameter :: subname = '(viscous_coeffs_and_rep_pressure_T2U)'
 
       ! NOTE: for comp. efficiency 2 x zeta and 2 x eta are used in the code
-      Totarea=maskT(i,j  )*Tarea(i,j)   + &
-              maskT(i+1,j)*Tarea(i+1,j) + &
-              maskT(i+1,j+1)*Tarea(i+1,j+1) + &
-              maskT(i,j+1)*Tarea(i,j+1)
+      Totarea = maskT_00*Tarea_00   + &
+                maskT_10*Tarea_10   + &
+                maskT_11*Tarea_11   + &
+                maskT_01*Tarea_01
               
-      zetax2U = (maskT(i,j)*Tarea(i,j)       *zetax2T(i,j)    + &
-                maskT(i+1,j)*Tarea(i+1,j)    *zetax2T(i+1,j)  + &
-                maskT(i,j+1)*Tarea(i,j+1)    *zetax2T(i,j+1)  + &
-                maskT(i+1,j+1)*Tarea(i+1,j+1)*zetax2T(i+1,j+1))/Totarea
+      zetax2U = (maskT_00*Tarea_00 *zetax2T_00  + &
+                 maskT_10*Tarea_10 *zetax2T_10  + &
+                 maskT_11*Tarea_11 *zetax2T_11  + &
+                 maskT_01*Tarea_01 *zetax2T_01)/Totarea
 
-      etax2U =  (maskT(i,j)    * etax2T(i,j)    + &
-                maskT(i+1,j)  * etax2T(i+1,j)     + &
-                maskT(i,j+1)  * etax2T(i,j+1)     + &
-                maskT(i+1,j+1)* etax2T(i+1,j+1))/Totarea
+      etax2U  = (maskT_00*Tarea_00 *etax2T_00   + &
+                 maskT_10*Tarea_10 *etax2T_10   + &
+                 maskT_11*Tarea_11 *etax2T_11   + &
+                 maskT_01*Tarea_01 *etax2T_01)/Totarea
  
       rep_prsU = (c1-ktens)/(1+Ktens)*zetax2U*deltaU
 
