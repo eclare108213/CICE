@@ -31,6 +31,7 @@
                 strain_rates, strain_rates_T, strain_rates_U, &
                 viscous_coeffs_and_rep_pressure, &
                 viscous_coeffs_and_rep_pressure_T, &
+                viscous_coeffs_and_rep_pressure_T2U, &
                 stack_velocity_field, unstack_velocity_field
 
       ! namelist parameters
