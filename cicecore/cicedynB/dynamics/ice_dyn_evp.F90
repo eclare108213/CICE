@@ -690,6 +690,7 @@
                                  dxU       (:,:,iblk), dyU       (:,:,iblk), &
                                  ratiodxN  (:,:,iblk), ratiodxNr (:,:,iblk), &
                                  ratiodyE  (:,:,iblk), ratiodyEr (:,:,iblk), &
+                                 tarea     (:,:,iblk),                       &
                                  epm       (:,:,iblk), npm       (:,:,iblk), &
                                  hm        (:,:,iblk), uvm       (:,:,iblk), &
                                  zetax2T   (:,:,iblk), etax2T    (:,:,iblk), &
@@ -977,7 +978,7 @@
                          rdg_conv,   rdg_shear,  & 
                          str )
 
-        use ice_dyn_shared, only: strain_rates, deformations, viscous_coeffs_and_rep_pressure
+      use ice_dyn_shared, only: strain_rates, deformations, viscous_coeffs_and_rep_pressure_T
         
       integer (kind=int_kind), intent(in) :: & 
          nx_block, ny_block, & ! block dimensions
@@ -1041,7 +1042,7 @@
         str12ew, str12we, str12ns, str12sn        , &
         strp_tmp, strm_tmp, tmp
 
-      real(kind=dbl_kind),parameter :: capping = c1 ! of the viscous coef
+      real(kind=dbl_kind), parameter :: capping = c1 ! of the viscous coef
       
       character(len=*), parameter :: subname = '(stress)'
 
@@ -1365,7 +1366,7 @@
         divT, tensionT, shearT, DeltaT, & ! strain rates at T point
         rep_prsT                          ! replacement pressure at T point
 
-        real(kind=dbl_kind),parameter :: capping = c1 ! of the viscous coef
+      real(kind=dbl_kind), parameter :: capping = c1 ! of the viscous coef
  
       character(len=*), parameter :: subname = '(stress_T)'
 
@@ -1454,6 +1455,7 @@
                              uvelU,      vvelU,     &
                              dxE,        dyN,       &
                              dxU,        dyU,       &
+                             tarea,                 &
                              ratiodxN,   ratiodxNr, &
                              ratiodyE,   ratiodyEr, &
                              epm,  npm, hm, uvm,    &
@@ -1461,8 +1463,8 @@
                              stresspU,   stressmU,  & 
                              stress12U              )
 
-        use ice_dyn_shared, only: strain_rates_U!, &
-                             !     viscous_coeffs_and_rep_pressure_U
+      use ice_dyn_shared, only: strain_rates_U, &
+                                viscous_coeffs_and_rep_pressure_T2U
         
       integer (kind=int_kind), intent(in) :: & 
          nx_block, ny_block, & ! block dimensions
@@ -1475,19 +1477,20 @@
 
       real (kind=dbl_kind), dimension (nx_block,ny_block), intent(in) :: &
          uvelE    , & ! x-component of velocity (m/s) at the E point
-         vvelE    , & ! y-component of velocity (m/s) at the N point
-         uvelN    , & ! x-component of velocity (m/s) at the E point
+         vvelE    , & ! y-component of velocity (m/s) at the E point
+         uvelN    , & ! x-component of velocity (m/s) at the N point
          vvelN    , & ! y-component of velocity (m/s) at the N point
          uvelU    , & ! x-component of velocity (m/s) at the U point
          vvelU    , & ! y-component of velocity (m/s) at the U point
-         dxE      , & ! width of E-cell through the middle (m)
+         dxE      , & ! width  of E-cell through the middle (m)
          dyN      , & ! height of N-cell through the middle (m)
-         dxU      , & ! width of U-cell through the middle (m)
+         dxU      , & ! width  of U-cell through the middle (m)
          dyU      , & ! height of U-cell through the middle (m)
-         ratiodxN , & ! -dxN(i+1,j)/dxN(i,j) for BCs
-         ratiodxNr, & ! -dxN(i,j)/dxN(i+1,j) for BCs
-         ratiodyE , & ! -dyE(i,j+1)/dyE(i,j) for BCs
-         ratiodyEr, & ! -dyE(i,j)/dyE(i,j+1) for BCs
+         tarea    , & ! area of T-cell (m^2)
+         ratiodxN , & ! -dxN(i+1,j)/dxN(i,j) factor for BCs across coastline
+         ratiodxNr, & ! -dxN(i,j)/dxN(i+1,j) factor for BCs across coastline
+         ratiodyE , & ! -dyE(i,j+1)/dyE(i,j) factor for BCs across coastline
+         ratiodyEr, & ! -dyE(i,j)/dyE(i,j+1) factor for BCs across coastline
          epm      , & ! E-cell mask
          npm      , & ! E-cell mask
          hm       , & ! T-cell mask
@@ -1541,15 +1544,15 @@
          etax2U = c0
          rep_prsU = c0
          
-         call viscous_coeffs_and_rep_pressure_T2U (zetax2T(i,j),    zetax2T(i,j+1), &
-                                                 zetax2T(i+1,j+1),zetax2T(i+1,j), &
-                                                 etax2T(i,j),     etax2T(i,j+1),  &
-                                                 etax2T(i+1,j+1), etax2T(i+1,j),  &
-                                                 hm(i,j),         hm(i,j+1),      &
-                                                 hm(i+1,j+1),     hm(i+1,j),      &
-                                                 tarea(i,j),      tarea(i,j+1),   &
-                                                 tarea(i+1,j+1),  tarea(i+1,j),   &
-                                                 DeltaU,zetax2U, etax2U, rep_prsU)
+         call viscous_coeffs_and_rep_pressure_T2U (zetax2T(i  ,j  ), zetax2T(i  ,j+1), &
+                                                   zetax2T(i+1,j+1), zetax2T(i+1,j  ), &
+                                                   etax2T (i  ,j  ), etax2T (i  ,j+1), &
+                                                   etax2T (i+1,j+1), etax2T (i+1,j  ), &
+                                                   hm     (i  ,j  ), hm     (i  ,j+1), &
+                                                   hm     (i+1,j+1), hm     (i+1,j  ), &
+                                                   tarea  (i  ,j  ), tarea  (i  ,j+1), &
+                                                   tarea  (i+1,j+1), tarea  (i+1,j  ), &
+                                                   DeltaU,zetax2U, etax2U, rep_prsU)
 
       !-----------------------------------------------------------------
       ! the stresses                            ! kg/s^2
@@ -1589,7 +1592,6 @@
                               stress12F2,             &
                               F1, F2,                 &
                               grid_location)
-
         
       integer (kind=int_kind), intent(in) :: & 
          nx_block, ny_block, & ! block dimensions
