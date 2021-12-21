@@ -12,7 +12,7 @@
       module ice_step_mod
 
       use ice_kinds_mod
-      use ice_constants, only: c0, c1, c1000, c4, p25
+      use ice_constants, only: c0, c1, c1000, c4, p25, p5
       use ice_exit, only: abort_ice
       use ice_fileunits, only: nu_diag
       use icepack_intfc, only: icepack_warnings_flush, icepack_warnings_aborted
@@ -181,7 +181,7 @@
           send_i2x_per_cat, fswthrun_ai, dsnow
       use ice_flux_bgc, only: dsnown, faero_atm, faero_ocn, fiso_atm, fiso_ocn, &
           Qa_iso, Qref_iso, fiso_evap, HDO_ocn, H2_16O_ocn, H2_18O_ocn
-      use ice_grid, only: lmask_n, lmask_s, tmask
+      use ice_grid, only: lmask_n, lmask_s, tmask, tarea
       use ice_state, only: aice, aicen, aice_init, aicen_init, vicen_init, &
           vice, vicen, vsno, vsnon, trcrn, uvel, vvel, vsnon_init
 
@@ -220,6 +220,9 @@
       real (kind=dbl_kind) :: &
          uvel_center, &     ! cell-centered velocity, x component (m/s)
          vvel_center, &     ! cell-centered velocity, y component (m/s)
+         floediameter,&     ! single floe diameter (m)
+         floediam   , &     ! floe diameter parameter (m)
+         pi         , &     ! pi
          puny               ! a very small number
 
       real (kind=dbl_kind), dimension(n_aero,2,ncat) :: &
@@ -239,6 +242,8 @@
       call icepack_query_parameters(puny_out=puny)
       call icepack_query_parameters(calc_Tsfc_out=calc_Tsfc)
       call icepack_query_parameters(highfreq_out=highfreq)
+      call icepack_query_parameters(floediam_out=floediam)
+      call icepack_query_parameters(pi_out=pi)
       call icepack_query_tracer_sizes(ntrcr_out=ntrcr)
       call icepack_query_tracer_flags( &
          tr_iage_out=tr_iage, tr_FY_out=tr_FY, tr_iso_out=tr_iso, &
@@ -342,6 +347,10 @@
          endif ! tr_aero
 
          if (tmask(i,j,iblk)) then
+
+         ! increase lateral melting for floes smaller than floediam
+         floediameter = p5*sqrt(aice(i,j,iblk)*tarea(i,j,iblk)/pi)
+         floediameter = min(floediameter, floediam)
 
          call icepack_step_therm1(dt=dt, ncat=ncat,            &
                       nilyr=nilyr, nslyr=nslyr,                &
@@ -490,6 +499,7 @@
                       lmask_s      = lmask_s     (i,j,  iblk), &
                       mlt_onset    = mlt_onset   (i,j,  iblk), &
                       frz_onset    = frz_onset   (i,j,  iblk), &
+                      floediameter = floediameter            , &
                       yday=yday, prescribed_ice=prescribed_ice)
 
       !-----------------------------------------------------------------
