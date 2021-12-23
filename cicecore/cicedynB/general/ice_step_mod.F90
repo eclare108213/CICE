@@ -348,9 +348,12 @@
 
          if (tmask(i,j,iblk)) then
 
-         ! increase lateral melting for floes smaller than floediam
-         floediameter = p5*sqrt(aice(i,j,iblk)*tarea(i,j,iblk)/pi)
-         floediameter = min(floediameter, floediam)
+         floediameter = floediam
+         if (1==0) then ! changes answers - implement namelist if useful
+            ! increase lateral melting for floes smaller than floediam
+            floediameter = p5*sqrt(aice(i,j,iblk)*tarea(i,j,iblk)/pi)
+            floediameter = min(floediameter, floediam)
+         endif
 
          call icepack_step_therm1(dt=dt, ncat=ncat,            &
                       nilyr=nilyr, nslyr=nslyr,                &
