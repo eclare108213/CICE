@@ -12,7 +12,7 @@
       module ice_step_mod
 
       use ice_kinds_mod
-      use ice_constants, only: c0, c1, c1000, c4, p25, p5
+      use ice_constants, only: c0, c1, c2, c1000, c4, p25
       use ice_exit, only: abort_ice
       use ice_fileunits, only: nu_diag
       use icepack_intfc, only: icepack_warnings_flush, icepack_warnings_aborted
@@ -351,7 +351,7 @@
          floediameter = floediam
          if (1==0) then ! changes answers - implement namelist if useful
             ! increase lateral melting for floes smaller than floediam
-            floediameter = p5*sqrt(aice(i,j,iblk)*tarea(i,j,iblk)/pi)
+            floediameter = c2*sqrt(aice(i,j,iblk)*tarea(i,j,iblk)/pi)
             floediameter = min(floediameter, floediam)
          endif
 
