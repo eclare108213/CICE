@@ -81,6 +81,66 @@ This is very likely to be bfb, but is not as fast or accurate as the reprosum
 implementation.  See :cite:`He01`
 
 
+.. _averages:
+
+Averages
+-----------------
+
+Coupling and history output quantities may be averaged in different forms, depending on
+whether it represents a value averaged over the entire grid cell, the sea ice fraction,
+or a subset of the sea ice fraction such as a thickness category or the ponded area. These
+distinctions must also be considered for time averaging.
+
+If :math:`\mathbf{X}=(x,y)`, :math:`A` is the cell area (:math:`m^2`), then the ice area
+(:math:`m^2`) is the sum of the thickness category areas :math:`a_n A`:
+
+.. math::
+   A_{i}(t) = \int_{ice} g(\mathbf{X},t) \, d\mathbf{X} = \sum_{n=1}^{ncat} a_n(t) \, A
+
+and the ice area fraction is
+
+.. math::
+   a_{ice}(t) = {1 \over A} \int_{ice} g(\mathbf{X},t) \, d\mathbf{X} = \sum_{n=1}^{ncat} a_n(t).
+
+The time-averaged ice area over an interval of length :math:`N\Delta t` is
+
+.. math::
+   \bar{A_{i}} = {\int_t A_{i}(t) \, dt \over \int_t \, dt}
+                 = {\sum_{\Delta t} \sum_{n=1}^{ncat} a_n \, A \, \Delta t \over N \, \Delta t}
+                 = {A \over N} \sum_{\Delta t} \sum_{n=1}^{ncat} a_n
+
+and the time-averaged ice area fraction is
+
+.. math::
+   \bar{a_{ice}} = {\int_t \int_{ice} g(\mathbf{X},t) \, d\mathbf{X} \, dt \over \int_t \int_{ice} d\mathbf{X} \, dt}
+           = {\sum_{\Delta t} \sum_{n=1}^{ncat} a_n \, A \Delta t \over A \, N \, \Delta t}
+           = {1 \over N} \sum_{\Delta t} \sum_{n=1}^{ncat} a_n.
+
+Likewise for time averages of ice volume (:math:`m^3`),
+
+.. math::
+   \bar{V_{i}} = {\int_t \int_{cell} \int_{0}^{h} g(\mathbf{X},t) \, dz \, d\mathbf{X} \, dt \over \int{t} dt}
+               = {\sum_{\Delta t} \sum_{n=1}^{ncat} h_n \, a_n \, A \, \Delta t \over N \, \Delta t}
+               = {A \over N} \sum_{\Delta t} \sum_{n=1}^{ncat} h_n \, a_n
+
+for thickness :math:`h` assumed to be 0 in open water. Then the ice volume per square meter of grid cell (:math:`m`) is
+
+.. math::
+   \bar{v_{ice}} = {\int_t \int_{cell} \int_{0}^{h} g(\mathbf{X},t) \, dz \, d\mathbf{X} \, dt \over \int{t} \int_{cell} d\mathbf{X} \, dt}
+                 = {\sum_{\Delta t} \sum_{n=1}^{ncat} h_n \, a_n \, A \, \Delta t \over A \, N \, \Delta t}
+                 = {1 \over N} \sum_{\Delta t} \sum_{n=1}^{ncat} h_n \, a_n = {1 \over N} \sum_{\Delta t} \sum_{n=1}^{ncat} v_n.
+
+:math:`v_{ice}` is the quantity labeled `hi` in history, which can be thought of as the mean ice thickness over the
+grid cell.  The ice volume per square meter of ice (mean 'actual' ice thickness, :math:`m`) is
+
+.. math::
+   \bar{h_{i}} = {\int_t \int_{ice} \int_{0}^{h} g(\mathbf{X},t) \, dz \, d\mathbf{X} \, dt \over \int{t} \int_{ice} d\mathbf{X} \, dt}
+                 = {\sum_{\Delta t} \sum_{n=1}^{ncat} h_n \, a_n \, A \, \Delta t \over N \, \Delta t \sum_{n=1}^{ncat} a_n \, A}
+                 = {\sum_{\Delta t} \sum_{n=1}^{ncat} v_n \over N \sum_{n=1}^{ncat} a_n}.
+
+
+
+
 .. _addtimer:
 
 Adding Timers
