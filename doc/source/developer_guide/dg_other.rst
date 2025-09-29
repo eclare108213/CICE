@@ -91,54 +91,121 @@ whether it represents a value averaged over the entire grid cell, the sea ice fr
 or a subset of the sea ice fraction such as a thickness category or the ponded area. These
 distinctions must also be considered for time averaging.
 
-If :math:`\mathbf{X}=(x,y)`, :math:`A` is the cell area (:math:`m^2`), then the ice area
-(:math:`m^2`) is the sum of the thickness category areas :math:`a_n A`:
+Ice area
+~~~~~~~~~~~~~~~~~
+
+If :math:`\mathbf{X}=(x,y)`, :math:`A` is the cell area (:math:`m^2`) and :math:`g` represents
+the ice thickness distribution discretized as :math:`a_n` for :math:`n=1,\, ncat`, then the
+ice area is the sum of the thickness category areas :math:`a_n A`:
 
 .. math::
-   A_{i}(t) = \int_{ice} g(\mathbf{X},t) \, d\mathbf{X} = \sum_{n=1}^{ncat} a_n(t) \, A
+   A_{i}(t) = \int_{ice} g(\mathbf{X},t) \, d\mathbf{X} \sim \sum_{n=1}^{ncat} a_n(t) \, A
 
 and the ice area fraction is
 
 .. math::
-   a_{ice}(t) = {1 \over A} \int_{ice} g(\mathbf{X},t) \, d\mathbf{X} = \sum_{n=1}^{ncat} a_n(t).
+   a_{ice}(t) = {1 \over A} \int_{ice} g(\mathbf{X},t) \, d\mathbf{X} \sim \sum_{n=1}^{ncat} a_n(t).
 
 The time-averaged ice area over an interval of length :math:`N\Delta t` is
 
 .. math::
-   \bar{A_{i}} = {\int_t A_{i}(t) \, dt \over \int_t \, dt}
-                 = {\sum_{\Delta t} \sum_{n=1}^{ncat} a_n \, A \, \Delta t \over N \, \Delta t}
+   \bar{A}_{i} = {\int_t A_{i}(t) \, dt \over \int_t \, dt}
+                 \sim {\sum_{\Delta t} \sum_{n=1}^{ncat} a_n \, A \, \Delta t \over N \, \Delta t}
                  = {A \over N} \sum_{\Delta t} \sum_{n=1}^{ncat} a_n
 
 and the time-averaged ice area fraction is
 
 .. math::
-   \bar{a_{ice}} = {\int_t \int_{ice} g(\mathbf{X},t) \, d\mathbf{X} \, dt \over \int_t \int_{ice} d\mathbf{X} \, dt}
-           = {\sum_{\Delta t} \sum_{n=1}^{ncat} a_n \, A \Delta t \over A \, N \, \Delta t}
+   \bar{a}_{ice} = {\int_t \int_{ice} g(\mathbf{X},t) \, d\mathbf{X} \, dt \over \int_t \int_{cell} d\mathbf{X} \, dt}
+           \sim {\sum_{\Delta t} \sum_{n=1}^{ncat} a_n \, A \Delta t \over A \, N \, \Delta t}
            = {1 \over N} \sum_{\Delta t} \sum_{n=1}^{ncat} a_n.
+
+Ice volume
+~~~~~~~~~~~~~~~~~
 
 Likewise for time averages of ice volume (:math:`m^3`),
 
 .. math::
-   \bar{V_{i}} = {\int_t \int_{cell} \int_{0}^{h} g(\mathbf{X},t) \, dz \, d\mathbf{X} \, dt \over \int{t} dt}
-               = {\sum_{\Delta t} \sum_{n=1}^{ncat} h_n \, a_n \, A \, \Delta t \over N \, \Delta t}
+   \bar{V}_{i} = {\int_t \int_{cell} \int_{0}^{h} g(\mathbf{X},t) \, dz \, d\mathbf{X} \, dt \over \int{t} dt}
+               \sim {\sum_{\Delta t} \sum_{n=1}^{ncat} h_n \, a_n \, A \, \Delta t \over N \, \Delta t}
                = {A \over N} \sum_{\Delta t} \sum_{n=1}^{ncat} h_n \, a_n
 
 for thickness :math:`h` assumed to be 0 in open water. Then the ice volume per square meter of grid cell (:math:`m`) is
 
 .. math::
-   \bar{v_{ice}} = {\int_t \int_{cell} \int_{0}^{h} g(\mathbf{X},t) \, dz \, d\mathbf{X} \, dt \over \int{t} \int_{cell} d\mathbf{X} \, dt}
-                 = {\sum_{\Delta t} \sum_{n=1}^{ncat} h_n \, a_n \, A \, \Delta t \over A \, N \, \Delta t}
+   \bar{v}_{ice} = {\int_t \int_{cell} \int_{0}^{h} g(\mathbf{X},t) \, dz \, d\mathbf{X} \, dt \over \int_{t} \int_{cell} d\mathbf{X} \, dt}
+                 \sim {\sum_{\Delta t} \sum_{n=1}^{ncat} h_n \, a_n \, A \, \Delta t \over A \, N \, \Delta t}
                  = {1 \over N} \sum_{\Delta t} \sum_{n=1}^{ncat} h_n \, a_n = {1 \over N} \sum_{\Delta t} \sum_{n=1}^{ncat} v_n.
 
 :math:`v_{ice}` is the quantity labeled `hi` in history, which can be thought of as the mean ice thickness over the
-grid cell.  The ice volume per square meter of ice (mean 'actual' ice thickness, :math:`m`) is
+grid cell. The ice volume per square meter of ice (mean 'actual' ice thickness, :math:`m`) is
 
 .. math::
-   \bar{h_{i}} = {\int_t \int_{ice} \int_{0}^{h} g(\mathbf{X},t) \, dz \, d\mathbf{X} \, dt \over \int{t} \int_{ice} d\mathbf{X} \, dt}
-                 = {\sum_{\Delta t} \sum_{n=1}^{ncat} h_n \, a_n \, A \, \Delta t \over N \, \Delta t \sum_{n=1}^{ncat} a_n \, A}
-                 = {\sum_{\Delta t} \sum_{n=1}^{ncat} v_n \over N \sum_{n=1}^{ncat} a_n}.
+   \bar{h}_{i} = {\int_t \int_{ice} \int_{0}^{h} g(\mathbf{X},t) \, dz \, d\mathbf{X} \, dt \over \int_{t} \int_{ice} d\mathbf{X} \, dt}
+               \sim {\sum_{\Delta t} \sum_{n=1}^{ncat} h_n \, a_n \, A \, \Delta t \over N \, \Delta t \sum_{n=1}^{ncat} a_n \, A}
+               = {\sum_{\Delta t} \sum_{n=1}^{ncat} v_n \over N \sum_{n=1}^{ncat} a_n}.
 
+Snow volume is treated similarly.
 
+Volume content
+~~~~~~~~~~~~~~~~~
+
+Total content of tracers such as salt and enthalpy are necessary for conservative coupling.  The time-average content
+of a volume tracer :math:`b` (with units per :math:`m^2`) is
+
+.. math::
+   \bar{b} = {\int_t \int_{cell} \int_{0}^{h} b(\mathbf{X},z,t) g(\mathbf{X},t) \, dz \, d\mathbf{X} \, dt \over \int_{t} dt}
+           \sim {\sum_{\Delta t} \sum_{n=1}^{ncat} b_n \, h_n \, a_n \, A \, \Delta t \over N \, \Delta t}
+           = {A \over N} \sum_{\Delta t} \sum_{n=1}^{ncat} b_n \, v_n
+
+and the content per square meter of grid cell is
+
+.. math::
+   \bar{b} \sim {1 \over N} \sum_{\Delta t} \sum_{n=1}^{ncat} b_n \, v_n.
+
+The mean tracer value in sea ice is
+
+.. math::
+   \bar{b}_{ice} = {\int_t \int_{cell} \int_{0}^{h} b(\mathbf{X},z,t) g(\mathbf{X},t) \, dz \, d\mathbf{X} \, dt \over \int_{t} \int_{cell} \int_{0}^{h} dz \, d\mathbf{X} \, dt}
+                 \sim {\sum_{\Delta t} \sum_{n=1}^{ncat} b_n \, h_n \, a_n \, A \, \Delta t \over \sum_{n=1}^{ncat} h_n \, a_n \, A, \, N \, \Delta t}
+		 =  {\sum_{\Delta t} \sum_{n=1}^{ncat} b_n \, v_n \over N \sum_{n=1}^{ncat} v_n}
+
+Surface quantities
+~~~~~~~~~~~~~~~~~
+
+Surface quantities such as temperature are treated similarly as volume tracers, with integrals taken over
+the desired surface area rather than the volume.  For example
+
+.. math::
+   \bar{T}_{ice} = {\int_t \int_{ice} T(\mathbf{X},t) g(\mathbf{X},t) \, d\mathbf{X} \, dt \over \int_{t} \int_{ice} g(\mathbf{X},t) \, d\mathbf{X} \, dt}
+                 \sim {\sum_{\Delta t} \sum_{n=1}^{ncat} T_n \, a_n \, A \, \Delta t \over \sum_{n=1}^{ncat} a_n \, A \, N \, \Delta t}
+                 = {\sum_{\Delta t} \sum_{n=1}^{ncat} T_n \, a_n \over N \sum_{n=1}^{ncat} a_n}.
+
+Care is required for tracers averaged over the cell:
+
+.. math::
+   \bar{T}_{cell} = {\int_t \int_{cell} T(\mathbf{X},t) g(\mathbf{X},t) \, d\mathbf{X} \, dt \over \int_{t} \int_{ice} g(\mathbf{X},t) \, d\mathbf{X} \, dt}
+                  \sim {\sum_{\Delta t} \left( T_o \, a_o + \sum_{n=1}^{ncat} T_n \, a_n \right) A \, \Delta t \over \left( a_o + \sum_{n=1}^{ncat} a_n \right) A \, N \, \Delta t}
+                  = {\sum_{\Delta t} \sum_{n=0}^{ncat} T_n \, a_n \over N
+
+if there is not open water, :math:`a_o=0`.
+
+If :math:`T_o=0`, then :math:`\bar{T}_{cell} = \sum_{n=1}^{ncat} T_n \, a_n / N`, the category merged (cell-averaged but not ice-averaged) value.
+This assumption is often used for time-averaging CICE's history fields (note the similarity with the area tracer :math:`h_n` above): the
+category merged value is saved then later divided by the ice area.  If a quantity has already been spatially averaged over the ice, e.g.
+
+.. math::
+   T_{i}(t) = {\int_{ice} T(\mathbf{X},t) g(\mathbf{X},t) \, d\mathbf{X} \over \int_{ice} g(\mathbf{X},t) \, d\mathbf{X}
+
+then
+
+.. math::
+   \bar{T}_{ice} = {\int_t \int_{ice} T(\mathbf{X},t) g(\mathbf{X},t) \, d\mathbf{X} \, dt \over \int_{t} \int_{ice} g(\mathbf{X},t) \, d\mathbf{X} \, dt}
+                 = {\int_t \left( \int_{ice} T(\mathbf{X},t) g(\mathbf{X},t) \, d\mathbf{X} \over \int_{ice} g(\mathbf{X},t) \, d\mathbf{X} \right) \int_{ice} g(\mathbf{X},t) \, d\mathbf{X} \, dt \over \int_{t} \int_{ice} g(\mathbf{X},t) \, d\mathbf{X} \, dt}
+                 = {\int_t \int_{ice} T_{i}(\mathbf{X},t) g(\mathbf{X},t) \, d\mathbf{X} \int_{ice} g(\mathbf{X},t) \, d\mathbf{X} \, dt \over \int_{t} \int_{ice} g(\mathbf{X},t) \, d\mathbf{X} \, dt}
+		 \sim {\sum_{\Delta t} T_{i} \sum_{n=1}^{ncat} a_n \over N \sum_{n=1}^{ncat} a_n}.
+
+In some cases, a portion of the calculation may be done in Icepack and then completed in CICE.
 
 
 .. _addtimer:
