@@ -104,40 +104,40 @@ ice area is the sum of the thickness category areas :math:`a_n A`:
 and the ice area fraction is
 
 .. math::
-   a_{ice}(t) = {1 \over A} \int_{ice} g(\mathbf{X},t) \, d\mathbf{X} \sim \sum_{n=1}^{ncat} a_n(t).
+    a_{ice}(t) = {\int_{ice} g(\mathbf{X},t) \, d\mathbf{X} \sim \sum_{n=1}^{ncat} a_n(t) \over \int_t \int_{cell} d\mathbf{X} \, dt}.
 
-The time-averaged ice area over an interval of length :math:`N\Delta t` is
+ The time-averaged ice area over an interval of length :math:`N\Delta t` is
 
-.. math::
-   \bar{A}_{i} = {\int_t A_{i}(t) \, dt \over \int_t \, dt}
-                 \sim {\sum_{\Delta t} \sum_{n=1}^{ncat} a_n \, A \, \Delta t \over N \, \Delta t}
-                 = {A \over N} \sum_{\Delta t} \sum_{n=1}^{ncat} a_n
+ .. math::
+    \bar{A}_{i} = {\int_t A_{i}(t) \, dt \over \int_t \, dt}
+                  \sim {\sum_{\Delta t} \sum_{n=1}^{ncat} a_n \, A \, \Delta t \over N \, \Delta t}
+                  = {A \over N} \sum_{\Delta t} \sum_{n=1}^{ncat} a_n
 
-and the time-averaged ice area fraction is
+ and the time-averaged ice area fraction is
 
-.. math::
-   \bar{a}_{ice} = {\int_t \int_{ice} g(\mathbf{X},t) \, d\mathbf{X} \, dt \over \int_t \int_{cell} d\mathbf{X} \, dt}
-           \sim {\sum_{\Delta t} \sum_{n=1}^{ncat} a_n \, A \Delta t \over A \, N \, \Delta t}
-           = {1 \over N} \sum_{\Delta t} \sum_{n=1}^{ncat} a_n.
+ .. math::
+    \bar{a}_{ice} = {\int_t \int_{ice} g(\mathbf{X},t) \, d\mathbf{X} \, dt \over \int_t \int_{cell} d\mathbf{X} \, dt}
+            \sim {\sum_{\Delta t} \sum_{n=1}^{ncat} a_n \, A \Delta t \over A \, N \, \Delta t}
+            = {1 \over N} \sum_{\Delta t} \sum_{n=1}^{ncat} a_n.
 
-Ice volume
-~~~~~~~~~~~~~~~~~
+ Ice volume
+ ~~~~~~~~~~~~~~~~~
 
-Likewise for time averages of ice volume (:math:`m^3`),
+ Likewise for time averages of ice volume (:math:`m^3`),
 
-.. math::
-   \bar{V}_{i} = {\int_t \int_{cell} \int_{0}^{h} g(\mathbf{X},t) \, dz \, d\mathbf{X} \, dt \over \int{t} dt}
+ .. math::
+    \bar{V}_{i} = {\int_t \int_{cell} \int_{0}^{h} g(\mathbf{X},t) \, dz \, d\mathbf{X} \, dt \over \int_{t} dt}
                \sim {\sum_{\Delta t} \sum_{n=1}^{ncat} h_n \, a_n \, A \, \Delta t \over N \, \Delta t}
                = {A \over N} \sum_{\Delta t} \sum_{n=1}^{ncat} h_n \, a_n
 
-for thickness :math:`h` assumed to be 0 in open water. Then the ice volume per square meter of grid cell (:math:`m`) is
+for ice thickness :math:`h` assumed to be 0 in open water. Then the ice volume per square meter of grid cell (:math:`m`) is
 
 .. math::
    \bar{v}_{ice} = {\int_t \int_{cell} \int_{0}^{h} g(\mathbf{X},t) \, dz \, d\mathbf{X} \, dt \over \int_{t} \int_{cell} d\mathbf{X} \, dt}
                  \sim {\sum_{\Delta t} \sum_{n=1}^{ncat} h_n \, a_n \, A \, \Delta t \over A \, N \, \Delta t}
                  = {1 \over N} \sum_{\Delta t} \sum_{n=1}^{ncat} h_n \, a_n = {1 \over N} \sum_{\Delta t} \sum_{n=1}^{ncat} v_n.
 
-:math:`v_{ice}` is the quantity labeled `hi` in history, which can be thought of as the mean ice thickness over the
+:math:`v_{ice}` is the quantity labeled `hi` in history, which can be thought of as the mean ice thickness averaged over the entire
 grid cell. The ice volume per square meter of ice (mean 'actual' ice thickness, :math:`m`) is
 
 .. math::
@@ -154,26 +154,26 @@ Total content of tracers such as salt and enthalpy are necessary for conservativ
 of a volume tracer :math:`b` (with units per :math:`m^2`) is
 
 .. math::
-   \bar{b} = {\int_t \int_{cell} \int_{0}^{h} b(\mathbf{X},z,t) g(\mathbf{X},t) \, dz \, d\mathbf{X} \, dt \over \int_{t} dt}
+   \bar{B}_{i} = {\int_t \int_{cell} \int_{0}^{h} b(\mathbf{X},z,t) g(\mathbf{X},t) \, dz \, d\mathbf{X} \, dt \over \int_{t} dt}
            \sim {\sum_{\Delta t} \sum_{n=1}^{ncat} b_n \, h_n \, a_n \, A \, \Delta t \over N \, \Delta t}
            = {A \over N} \sum_{\Delta t} \sum_{n=1}^{ncat} b_n \, v_n
 
 and the content per square meter of grid cell is
 
 .. math::
-   \bar{b} \sim {1 \over N} \sum_{\Delta t} \sum_{n=1}^{ncat} b_n \, v_n.
+   \bar{b}_{ice} \sim {1 \over N} \sum_{\Delta t} \sum_{n=1}^{ncat} b_n \, v_n.
 
 The mean tracer value in sea ice is
 
 .. math::
-   \bar{b}_{ice} = {\int_t \int_{cell} \int_{0}^{h} b(\mathbf{X},z,t) g(\mathbf{X},t) \, dz \, d\mathbf{X} \, dt \over \int_{t} \int_{cell} \int_{0}^{h} dz \, d\mathbf{X} \, dt}
+   \bar{b}_{i} = {\int_t \int_{cell} \int_{0}^{h} b(\mathbf{X},z,t) g(\mathbf{X},t) \, dz \, d\mathbf{X} \, dt \over \int_{t} \int_{cell} \int_{0}^{h} dz \, d\mathbf{X} \, dt}
                  \sim {\sum_{\Delta t} \sum_{n=1}^{ncat} b_n \, h_n \, a_n \, A \, \Delta t \over \sum_{n=1}^{ncat} h_n \, a_n \, A, \, N \, \Delta t}
 		 =  {\sum_{\Delta t} \sum_{n=1}^{ncat} b_n \, v_n \over N \sum_{n=1}^{ncat} v_n}
 
 Surface quantities
 ~~~~~~~~~~~~~~~~~
 
-Surface quantities such as temperature are treated similarly as volume tracers, with integrals taken over
+Surface quantities such as temperature are treated similarly to volume tracers, with integrals taken over
 the desired surface area rather than the volume.  For example
 
 .. math::
@@ -186,7 +186,7 @@ Care is required for tracers averaged over the cell:
 .. math::
    \bar{T}_{cell} = {\int_t \int_{cell} T(\mathbf{X},t) g(\mathbf{X},t) \, d\mathbf{X} \, dt \over \int_{t} \int_{ice} g(\mathbf{X},t) \, d\mathbf{X} \, dt}
                   \sim {\sum_{\Delta t} \left( T_o \, a_o + \sum_{n=1}^{ncat} T_n \, a_n \right) A \, \Delta t \over \left( a_o + \sum_{n=1}^{ncat} a_n \right) A \, N \, \Delta t}
-                  = {\sum_{\Delta t} \sum_{n=0}^{ncat} T_n \, a_n \over N
+                  = {\sum_{\Delta t} \sum_{n=0}^{ncat} T_n \, a_n} \over N}
 
 if there is not open water, :math:`a_o=0`.
 
