@@ -200,13 +200,15 @@ category merged (cell-averaged but not ice-averaged) value.
    \bar{T}_{cell} = {1 \over N} \sum_{\Delta t} \sum_{n=1}^{ncat} T_n \, a_n.
 
 This assumption is often used for time-averaging CICE's history fields: the category-merged value is saved then later divided by the ice area.
+
 If a quantity has already been spatially averaged over the ice, e.g.
 
 .. math::
    T_{ice}(t) = \frac{ \int_{ice} T(\mathbf{X},t) g(\mathbf{X},t) \, d\mathbf{X} }{ \int_{ice} g(\mathbf{X},t) \, d\mathbf{X} }
               \sim \frac{ \sum_{n=1}^{ncat} T_n \, a_n \, }{ \sum_{n=1}^{ncat} a_n}
 
-then
+then the ice-averaged quantity must be multiplied by the ice area to return it to the cell-averaged quantity (assuming
+a value of zero in open water) before being accumulated in time and divided once again by the ice area:
 
 .. math::
    \bar{T}_{ice} = {\int_t \int_{ice} T(\mathbf{X},t) g(\mathbf{X},t) \, d\mathbf{X} \, dt \over \int_{t} \int_{ice} g(\mathbf{X},t) \, d\mathbf{X} \, dt}
