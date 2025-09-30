@@ -212,7 +212,7 @@ Tracer hierarchies
 ~~~~~~~~~~~~~~~~~
 
 For tracers that are carried on other tracers, such as melt ponds, averages over different areas of a given cell differ in the denominator.
-For instance, the average melt pond depths over the grid cell area, the ice area, and the ponded area are, respectively,
+For melt ponds not carried on the level-ice area, the average pond depths over the grid cell area, the ice area, and the ponded area are, respectively,
 
 .. math::
    h_{p\,cell} = \frac{ \int_{cell} h_p \, a_p \, g \, d\mathbf{X} }
@@ -232,6 +232,15 @@ For instance, the average melt pond depths over the grid cell area, the ice area
                = \frac{ \int_{cell} h_p \, a_p \, g \, d\mathbf{X} }
                       { \int_{pond} a_p \, g \, d\mathbf{X} }
 		\sim \frac{ \sum_{n=1}^{ncat} h_{pn} \, a_{pn} \, a_n }{ \sum_{n=1}^{ncat} a_{pn} \, a_n }
+
+For level-ice ponds, there is an extra factor of :math:`a_{lvl}`, and the level-ice pond depth averaged over the level ice is
+
+.. math::
+   h_{p\,lvl} = \frac{ \int_{lvl} h_p \, a_p \, a_{lvl} \, g \, d\mathbf{X} }
+                     { \int_{lvl} a_p \, a_{lvl} \, g \, d\mathbf{X} }
+               = \frac{ \int_{cell} h_p \, a_p \, a_{lvl} \, g \, d\mathbf{X} }
+                      { \int_{pond} a_p \, a_{lvl} \, g \, d\mathbf{X} }
+		\sim \frac{ \sum_{n=1}^{ncat} h_{pn} \, a_{pn} \, a_{lvln} \, a_n }{ \sum_{n=1}^{ncat} a_{pn} \, a_{lvln} \, a_n }
 
 Time averages follow analogously as above.
 
