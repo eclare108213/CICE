@@ -178,16 +178,13 @@ the desired surface area rather than the volume.  For example
 
 .. math::
    \bar{T}_{ice} = {\int_t \int_{ice} T(\mathbf{X},t) g(\mathbf{X},t) \, d\mathbf{X} \, dt \over \int_{t} \int_{ice} g(\mathbf{X},t) \, d\mathbf{X} \, dt}
-                 \sim {\sum_{\Delta t} \sum_{n=1}^{ncat} T_n \, a_n \, A \, \Delta t \over \sum_{n=1}^{ncat} a_n \, A \, N \, \Delta t}
-                 = {\sum_{\Delta t} \sum_{n=1}^{ncat} T_n \, a_n \over N \sum_{n=1}^{ncat} a_n}.
 
 Care is required for tracers averaged over the cell:
 
 .. math::
    \bar{T}_{cell} = {\int_t \int_{cell} T(\mathbf{X},t) g(\mathbf{X},t) \, d\mathbf{X} \, dt \over \int_{t} \int_{ice} g(\mathbf{X},t) \, d\mathbf{X} \, dt}
-                  \sim {\sum_{\Delta t} \left( T_o \, a_o + \sum_{n=1}^{ncat} T_n \, a_n \right) A \, \Delta t \over \left( a_o + \sum_{n=1}^{ncat} a_n \right) A \, N \, \Delta t}
-                  = {1 \over N} \sum_{\Delta t} \sum_{n=1}^{ncat} T_n \, a_n
 
+   
 if there is not open water, :math:`a_o=0`.
 
 If :math:`T_o=0`, then :math:`\bar{T}_{cell} = \sum_{n=1}^{ncat} T_n \, a_n / N`, the category merged (cell-averaged but not ice-averaged) value.
