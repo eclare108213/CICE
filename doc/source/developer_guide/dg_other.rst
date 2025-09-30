@@ -212,19 +212,23 @@ Tracer hierarchies
 ~~~~~~~~~~~~~~~~~
 
 For tracers that are carried on other tracers, such as melt ponds, averages over different areas of a given cell differ in the denominator.
-For instance, the average melt pond depths over a grid cell, the ice area, and the ponded area are, respectively,
+For instance, the average melt pond depths over the grid cell area, the ice area, and the ponded area are, respectively,
 
 .. math::
    h_{p\,cell} = \frac{ \int_{cell} h_p \, a_p \, g \, d\mathbf{X} }
                       { \int_{cell} d\mathbf{X} }
 
 .. math::
-   h_{p\,ice}  = \frac{ \int_{cell} h_p \, a_p \, g \, d\mathbf{X} }
-                      { \int_{cell} g \, d\mathbf{X} }
+   h_{p\,ice}  = \frac{ \int_{ice} h_p \, a_p \, g \, d\mathbf{X} }
+                      { \int_{ice} g \, d\mathbf{X} }
+               = \frac{ \int_{cell} h_p \, a_p \, g \, d\mathbf{X} }
+                      { \int_{ice} g \, d\mathbf{X} }
 
 .. math::
-   h_{p\,pond} = \frac{ \int_{cell} h_p \, a_p \, g \, d\mathbf{X} }
-                      { \int_{cell} a_p \, g \, d\mathbf{X} }
+   h_{p\,pond} = \frac{ \int_{pond} h_p \, a_p \, g \, d\mathbf{X} }
+                      { \int_{pond} a_p \, g \, d\mathbf{X} }
+               = \frac{ \int_{cell} h_p \, a_p \, g \, d\mathbf{X} }
+                      { \int_{pond} a_p \, g \, d\mathbf{X} }
 
 Time averages follow analogously as above.
 
