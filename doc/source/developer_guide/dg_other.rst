@@ -238,7 +238,7 @@ For level-ice ponds, there is an extra factor of :math:`a_{lvl}`. The level-ice 
 .. math::
    h_{p\,cell} = \frac{ \int_{cell} h_p \, a_p \, a_{lvl} \, g \, d\mathbf{X} }
                      { \int_{cell} d\mathbf{X} }
-		\sim \sum_{n=1}^{ncat} h_{pn} \, a_{lvln} \, a_n
+		\sim \sum_{n=1}^{ncat} h_{pn} \, a_{pn} \, a_{lvln} \, a_n
 
 .. math::
    h_{p\,ice} = \frac{ \int_{ice} h_p \, a_p \, a_{lvl} \, g \, d\mathbf{X} }
@@ -252,7 +252,7 @@ For level-ice ponds, there is an extra factor of :math:`a_{lvl}`. The level-ice 
                      { \int_{lvl} a_{lvl} \, g \, d\mathbf{X} }
                = \frac{ \int_{cell} h_p \, a_p \, a_{lvl} \, g \, d\mathbf{X} }
                       { \int_{ice} a_{lvl} \, a_{pn} \, g \, d\mathbf{X} }
-		\sim \frac{ \sum_{n=1}^{ncat} h_{pn} \, a_{lvln} \, a_n }{ \sum_{n=1}^{ncat} a_{lvln} \, a_n }
+		\sim \frac{ \sum_{n=1}^{ncat} h_{pn} \, a_{pn} \, a_{lvln} \, a_n }{ \sum_{n=1}^{ncat} a_{lvln} \, a_n }
 
 .. math::
    h_{p\,pond} = \frac{ \int_{pond} h_p \, a_p \, a_{lvl} \, g \, d\mathbf{X} }
