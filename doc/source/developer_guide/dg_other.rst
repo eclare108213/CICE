@@ -91,6 +91,12 @@ whether it represents a value averaged over the entire grid cell, the sea ice fr
 or a subset of the sea ice fraction such as a thickness category or the ponded area. These
 distinctions must also be considered for time averaging.
 
+The following formulas ignore subtleties such as thermodynamic fluxes being computed on the initial ice area, which then
+changes due to frazil ice formation, lateral melting and transport.  The ice area used for averaging should be carefully
+considered in light of the model timestepping.  Edge cases such as the complete disappearance or new appearance of ice
+cause issues with the averaging.  To address these cases, we could consider interpolating all quantities to the middle of the
+timestep, but that is not currently done.
+
 Ice area
 ~~~~~~~~~~~~~~~~~
 
