@@ -208,6 +208,25 @@ then
 
 In some cases, a portion of the calculation may be done in Icepack and then completed in CICE.
 
+Tracer hierarchies
+~~~~~~~~~~~~~~~~~
+
+For tracers that are carried on other tracers, such as melt ponds, averages over different areas of a given cell differ in the denominator.
+For instance, the average melt pond depth over a grid cell, the ice area, and the ponded area are, respectively,
+
+.. math::
+   h_p_{cell}(t) = \frac{ \int_{cell} h_p(\mathbf{X},t) \, a_p(\mathbf{X},t) \, g(\mathbf{X},t) \, d\mathbf{X} }
+                        { \int_{cell} d\mathbf{X} }
+
+.. math::
+   h_p_{ice}(t)  = \frac{ \int_{cell} h_p(\mathbf{X},t) \, a_p(\mathbf{X},t) \, g(\mathbf{X},t) \, d\mathbf{X} }
+                        { \int_{cell} g(\mathbf{X},t) \, d\mathbf{X} }
+
+.. math::
+   h_p_{pond}(t) = \frac{ \int_{cell} h_p(\mathbf{X},t) \, a_p(\mathbf{X},t) \, g(\mathbf{X},t) \, d\mathbf{X} }
+                        { \int_{cell} a_p(\mathbf{X},t) \, g(\mathbf{X},t) \, d\mathbf{X} }
+
+Time averages follow analogously as above.
 
 .. _addtimer:
 
