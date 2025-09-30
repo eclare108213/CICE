@@ -238,7 +238,7 @@ For level-ice ponds, there is an extra factor of :math:`a_{lvl}`. The level-ice 
 .. math::
    h_{p\,cell} = \frac{ \int_{cell} h_p \, a_p \, a_{lvl} \, g \, d\mathbf{X} }
                      { \int_{cell} d\mathbf{X} }
-		\sim \sum_{n=1}^{ncat} h_{pn} \, a_{lvln} \, a_n }
+		\sim \sum_{n=1}^{ncat} h_{pn} \, a_{lvln} \, a_n
 
 .. math::
    h_{p\,ice} = \frac{ \int_{ice} h_p \, a_p \, a_{lvl} \, g \, d\mathbf{X} }
