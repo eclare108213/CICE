@@ -197,7 +197,7 @@ This assumption is often used for time-averaging CICE's history fields: the cate
 If a quantity has already been spatially averaged over the ice, e.g.
 
 .. math::
-   T_{i}(t) = {\int_{ice} T(\mathbf{X},t) g(\mathbf{X},t) \, d\mathbf{X} \over \int_{ice} g(\mathbf{X},t) \, d\mathbf{X}
+   T_i(t) = \frac{ \int_{ice} T(\mathbf{X},t) g(\mathbf{X},t) \, d\mathbf{X} }{ \int_{ice} g(\mathbf{X},t) \, d\mathbf{X} }
 
 then
 
