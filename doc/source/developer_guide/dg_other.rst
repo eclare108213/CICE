@@ -230,17 +230,24 @@ For melt ponds not carried on the level-ice area, the average pond depths over t
    h_{p\,pond} = \frac{ \int_{pond} h_p \, a_p \, g \, d\mathbf{X} }
                       { \int_{pond} a_p \, g \, d\mathbf{X} }
                = \frac{ \int_{cell} h_p \, a_p \, g \, d\mathbf{X} }
-                      { \int_{pond} a_p \, g \, d\mathbf{X} }
-		\sim \frac{ \sum_{n=1}^{ncat} h_{pn} \, a_{pn} \, a_n }{ \sum_{n=1}^{ncat} a_{pn} \, a_n }
+                      { \int_{ice} a_p \, g \, d\mathbf{X} }
+		\sim \frac{ \sum_{n=1}^{ncat} h_{pn} \, a_{pn} \, a_n }{ \sum_{n=1}^{ncat} a_{pn} \, a_n }.
 
-For level-ice ponds, there is an extra factor of :math:`a_{lvl}`, and the level-ice pond depth averaged over the level ice is
+For level-ice ponds, there is an extra factor of :math:`a_{lvl}`. The level-ice pond depth averaged over the level ice area and pond area are
 
 .. math::
    h_{p\,lvl} = \frac{ \int_{lvl} h_p \, a_p \, a_{lvl} \, g \, d\mathbf{X} }
-                     { \int_{lvl} a_p \, a_{lvl} \, g \, d\mathbf{X} }
+                     { \int_{lvl} a_{lvl} \, g \, d\mathbf{X} }
                = \frac{ \int_{cell} h_p \, a_p \, a_{lvl} \, g \, d\mathbf{X} }
+                      { \int_{ice} a_{lvl} \, g \, d\mathbf{X} }
+		\sim \frac{ \sum_{n=1}^{ncat} h_{pn} \, a_{lvln} \, a_n }{ \sum_{n=1}^{ncat} a_{lvln} \, a_n }
+
+.. math::
+   h_{p\,pond} = \frac{ \int_{pond} h_p \, a_p \, a_{lvl} \, g \, d\mathbf{X} }
                       { \int_{pond} a_p \, a_{lvl} \, g \, d\mathbf{X} }
-		\sim \frac{ \sum_{n=1}^{ncat} h_{pn} \, a_{pn} \, a_{lvln} \, a_n }{ \sum_{n=1}^{ncat} a_{pn} \, a_{lvln} \, a_n }
+               = \frac{ \int_{cell} h_p \, a_p \, a_{lvl} \, g \, d\mathbf{X} }
+                      { \int_{ice} a_p \, a_{lvl} \, g \, d\mathbf{X} }
+		\sim \frac{ \sum_{n=1}^{ncat} h_{pn} \, a_{pn} \, a_{lvln} \, a_n }{ \sum_{n=1}^{ncat} a_{pn} \, a_{lvln} \, a_n }.
 
 Time averages follow analogously as above.
 
