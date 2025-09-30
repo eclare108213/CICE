@@ -217,18 +217,21 @@ For instance, the average melt pond depths over the grid cell area, the ice area
 .. math::
    h_{p\,cell} = \frac{ \int_{cell} h_p \, a_p \, g \, d\mathbf{X} }
                       { \int_{cell} d\mathbf{X} }
+		\sim \sum_{n=1}^{ncat} h_{pn} \, a_{pn} \, a_n
 
 .. math::
    h_{p\,ice}  = \frac{ \int_{ice} h_p \, a_p \, g \, d\mathbf{X} }
                       { \int_{ice} g \, d\mathbf{X} }
                = \frac{ \int_{cell} h_p \, a_p \, g \, d\mathbf{X} }
                       { \int_{ice} g \, d\mathbf{X} }
+		\sim \frac{ \sum_{n=1}^{ncat} h_{pn} \, a_{pn} \, a_n }{ \sum_{n=1}^{ncat} a_n }
 
 .. math::
    h_{p\,pond} = \frac{ \int_{pond} h_p \, a_p \, g \, d\mathbf{X} }
                       { \int_{pond} a_p \, g \, d\mathbf{X} }
                = \frac{ \int_{cell} h_p \, a_p \, g \, d\mathbf{X} }
                       { \int_{pond} a_p \, g \, d\mathbf{X} }
+		\sim \frac{ \sum_{n=1}^{ncat} h_{pn} \, a_{pn} \, a_n }{ \sum_{n=1}^{ncat} a_{pn} \, a_n }
 
 Time averages follow analogously as above.
 
