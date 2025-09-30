@@ -186,7 +186,7 @@ Care is required for tracers averaged over the cell:
 .. math::
    \bar{T}_{cell} = {\int_t \int_{cell} T(\mathbf{X},t) g(\mathbf{X},t) \, d\mathbf{X} \, dt \over \int_{t} \int_{ice} g(\mathbf{X},t) \, d\mathbf{X} \, dt}
                   \sim {\sum_{\Delta t} \left( T_o \, a_o + \sum_{n=1}^{ncat} T_n \, a_n \right) A \, \Delta t \over \left( a_o + \sum_{n=1}^{ncat} a_n \right) A \, N \, \Delta t}
-                  = {\sum_{\Delta t} \sum_{n=0}^{ncat} T_n \, a_n} \over N}
+                  = {\sum_{\Delta t} \sum_{n=0}^{ncat} T_n \, a_n \over N}
 
 if there is not open water, :math:`a_o=0`.
 
@@ -201,8 +201,7 @@ then
 
 .. math::
    \bar{T}_{ice} = {\int_t \int_{ice} T(\mathbf{X},t) g(\mathbf{X},t) \, d\mathbf{X} \, dt \over \int_{t} \int_{ice} g(\mathbf{X},t) \, d\mathbf{X} \, dt}
-                 = {\int_t \left( \int_{ice} T(\mathbf{X},t) g(\mathbf{X},t) \, d\mathbf{X} \over \int_{ice} g(\mathbf{X},t) \, d\mathbf{X} \right) \int_{ice} g(\mathbf{X},t) \, d\mathbf{X} \, dt \over \int_{t} \int_{ice} g(\mathbf{X},t) \, d\mathbf{X} \, dt}
-                 = {\int_t \int_{ice} T_{i}(\mathbf{X},t) g(\mathbf{X},t) \, d\mathbf{X} \int_{ice} g(\mathbf{X},t) \, d\mathbf{X} \, dt \over \int_{t} \int_{ice} g(\mathbf{X},t) \, d\mathbf{X} \, dt}
+                 = {\int_t \left( T_{i}(t) \right)\left( \int_{ice} g(\mathbf{X},t) \, d\mathbf{X} \right) dt \over \int_{t} \int_{ice} g(\mathbf{X},t) \, d\mathbf{X} \, dt}
 		 \sim {\sum_{\Delta t} T_{i} \sum_{n=1}^{ncat} a_n \over N \sum_{n=1}^{ncat} a_n}.
 
 In some cases, a portion of the calculation may be done in Icepack and then completed in CICE.
