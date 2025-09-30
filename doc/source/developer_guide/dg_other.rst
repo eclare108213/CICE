@@ -168,7 +168,7 @@ The mean tracer value in sea ice is
 
 .. math::
    \bar{b}_{i} = {\int_t \int_{cell} \int_{0}^{h} b(\mathbf{X},z,t) g(\mathbf{X},t) \, dz \, d\mathbf{X} \, dt \over \int_{t} \int_{cell} \int_{0}^{h} dz \, d\mathbf{X} \, dt}
-                 \sim {\sum_{\Delta t} \sum_{n=1}^{ncat} b_n \, h_n \, a_n \, A \, \Delta t \over \sum_{n=1}^{ncat} h_n \, a_n \, A, \, N \, \Delta t}
+                 \sim {\sum_{\Delta t} \sum_{n=1}^{ncat} b_n \, h_n \, a_n \, A \, \Delta t \over \sum_{n=1}^{ncat} h_n \, a_n \, A \, N \, \Delta t}
 		 =  {\sum_{\Delta t} \sum_{n=1}^{ncat} b_n \, v_n \over N \sum_{n=1}^{ncat} v_n}
 
 Surface quantities
