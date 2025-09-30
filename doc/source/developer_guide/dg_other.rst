@@ -187,13 +187,13 @@ Care is required for tracers averaged over the cell:
                   \sim {\sum_{\Delta t} \sum_{n=0}^{ncat} T_n \, a_n \, A \, \Delta t \over \sum_{n=0}^{ncat} a_n \, A \, N \, \Delta t}
                   = {\sum_{\Delta t} \left( T_o \, a_o + \sum_{n=1}^{ncat} T_n \, a_n \right) \over N}.
    
-If the tracer is (or is assumed to be) zero in open water, :math:`T_o=0` then the time average is easily computed using the
+If the tracer is (or is assumed to be) zero in open water, :math:`T_o=0`, then the time average is computed using the
 category merged (cell-averaged but not ice-averaged) value.
 
 .. math::
    \bar{T}_{cell} = {1 \over N} \sum_{\Delta t} \sum_{n=1}^{ncat} T_n \, a_n.
 
-This assumption is often used for time-averaging CICE's history fields: thecategory merged value is saved then later divided by the ice area.
+This assumption is often used for time-averaging CICE's history fields: the category-merged value is saved then later divided by the ice area.
 If a quantity has already been spatially averaged over the ice, e.g.
 
 .. math::
