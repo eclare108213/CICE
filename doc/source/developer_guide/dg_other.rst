@@ -104,29 +104,30 @@ ice area is the sum of the thickness category areas :math:`a_n A`:
 and the ice area fraction is
 
 .. math::
-    a_{ice}(t) = {\int_{ice} g(\mathbf{X},t) \, d\mathbf{X} \sim \sum_{n=1}^{ncat} a_n(t) \over \int_t \int_{cell} d\mathbf{X} \, dt}.
+   a_{ice}(t) = {\int_{ice} g(\mathbf{X},t) \, d\mathbf{X} \sim \sum_{n=1}^{ncat} a_n(t) \over \int_t \int_{cell} d\mathbf{X} \, dt}.
 
- The time-averaged ice area over an interval of length :math:`N\Delta t` is
 
- .. math::
-    \bar{A}_{i} = {\int_t A_{i}(t) \, dt \over \int_t \, dt}
-                  \sim {\sum_{\Delta t} \sum_{n=1}^{ncat} a_n \, A \, \Delta t \over N \, \Delta t}
-                  = {A \over N} \sum_{\Delta t} \sum_{n=1}^{ncat} a_n
+The time-averaged ice area over an interval of length :math:`N\Delta t` is
 
- and the time-averaged ice area fraction is
+.. math::
+   \bar{A}_{i} = {\int_t A_{i}(t) \, dt \over \int_t \, dt}
+               \sim {\sum_{\Delta t} \sum_{n=1}^{ncat} a_n \, A \, \Delta t \over N \, \Delta t}
+               = {A \over N} \sum_{\Delta t} \sum_{n=1}^{ncat} a_n
 
- .. math::
-    \bar{a}_{ice} = {\int_t \int_{ice} g(\mathbf{X},t) \, d\mathbf{X} \, dt \over \int_t \int_{cell} d\mathbf{X} \, dt}
-            \sim {\sum_{\Delta t} \sum_{n=1}^{ncat} a_n \, A \Delta t \over A \, N \, \Delta t}
-            = {1 \over N} \sum_{\Delta t} \sum_{n=1}^{ncat} a_n.
+and the time-averaged ice area fraction is
+
+.. math::
+   \bar{a}_{ice} = {\int_t \int_{ice} g(\mathbf{X},t) \, d\mathbf{X} \, dt \over \int_t \int_{cell} d\mathbf{X} \, dt}
+                 \sim {\sum_{\Delta t} \sum_{n=1}^{ncat} a_n \, A \Delta t \over A \, N \, \Delta t}
+                 = {1 \over N} \sum_{\Delta t} \sum_{n=1}^{ncat} a_n.
 
  Ice volume
  ~~~~~~~~~~~~~~~~~
 
  Likewise for time averages of ice volume (:math:`m^3`),
 
- .. math::
-    \bar{V}_{i} = {\int_t \int_{cell} \int_{0}^{h} g(\mathbf{X},t) \, dz \, d\mathbf{X} \, dt \over \int_{t} dt}
+.. math::
+   \bar{V}_{i} = {\int_t \int_{cell} \int_{0}^{h} g(\mathbf{X},t) \, dz \, d\mathbf{X} \, dt \over \int_{t} dt}
                \sim {\sum_{\Delta t} \sum_{n=1}^{ncat} h_n \, a_n \, A \, \Delta t \over N \, \Delta t}
                = {A \over N} \sum_{\Delta t} \sum_{n=1}^{ncat} h_n \, a_n
 
