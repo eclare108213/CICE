@@ -184,14 +184,17 @@ Care is required for tracers averaged over the cell:
 
 .. math::
    \bar{T}_{cell} = {\int_t \int_{cell} T(\mathbf{X},t) g(\mathbf{X},t) \, d\mathbf{X} \, dt \over \int_{t} \int_{ice} g(\mathbf{X},t) \, d\mathbf{X} \, dt}
-                  \sim {\sum_{\Delta t} \left( T_o \, a_o + \sum_{n=1}^{ncat} T_n \, a_n \right) A \, \Delta t \over \left( a_o + \sum_{n=1}^{ncat} a_n \right) A \, N \, \Delta t}
-
+                  \sim {\sum_{\Delta t} \sum_{n=0}^{ncat} T_n \, a_n \, A \, \Delta t \over \sum_{n=0}^{ncat} a_n \, A \, N \, \Delta t}
+                  = {\sum_{\Delta t} \left( T_o \, a_o + \sum_{n=1}^{ncat} T_n \, a_n \right) \over N}.
    
-if there is not open water, :math:`a_o=0`.
+If the tracer is (or is assumed to be) zero in open water, :math:`T_o=0` then the time average is easily computed using the
+category merged (cell-averaged but not ice-averaged) value.
 
-If :math:`T_o=0`, then :math:`\bar{T}_{cell} = \sum_{n=1}^{ncat} T_n \, a_n / N`, the category merged (cell-averaged but not ice-averaged) value.
-This assumption is often used for time-averaging CICE's history fields (note the similarity with the area tracer :math:`h_n` above): the
-category merged value is saved then later divided by the ice area.  If a quantity has already been spatially averaged over the ice, e.g.
+.. math::
+   \bar{T}_{cell} = {1 \over N} \sum_{\Delta t} \sum_{n=1}^{ncat} T_n \, a_n.
+
+This assumption is often used for time-averaging CICE's history fields: thecategory merged value is saved then later divided by the ice area.
+If a quantity has already been spatially averaged over the ice, e.g.
 
 .. math::
    T_{i}(t) = {\int_{ice} T(\mathbf{X},t) g(\mathbf{X},t) \, d\mathbf{X} \over \int_{ice} g(\mathbf{X},t) \, d\mathbf{X}
@@ -200,8 +203,8 @@ then
 
 .. math::
    \bar{T}_{ice} = {\int_t \int_{ice} T(\mathbf{X},t) g(\mathbf{X},t) \, d\mathbf{X} \, dt \over \int_{t} \int_{ice} g(\mathbf{X},t) \, d\mathbf{X} \, dt}
-                 = {\int_t \left( T_{i}(t) \right)\left( \int_{ice} g(\mathbf{X},t) \, d\mathbf{X} \right) dt \over \int_{t} \int_{ice} g(\mathbf{X},t) \, d\mathbf{X} \, dt}
-		 \sim {\sum_{\Delta t} T_{i} \sum_{n=1}^{ncat} a_n \over N \sum_{n=1}^{ncat} a_n}.
+                 = {\int_t T_{i}(t) \left( \int_{ice} g(\mathbf{X},t) \, d\mathbf{X} \right) dt \over \int_{t} \int_{ice} g(\mathbf{X},t) \, d\mathbf{X} \, dt}
+		 \sim {\sum_{\Delta t} \left( T_{i} \sum_{n=1}^{ncat} a_n \right) \over N \sum_{n=1}^{ncat} a_n}.
 
 In some cases, a portion of the calculation may be done in Icepack and then completed in CICE.
 
