@@ -104,7 +104,7 @@ ice area is the sum of the thickness category areas :math:`a_n A`:
 and the ice area fraction is
 
 .. math::
-   a_{ice}(t) = {\int_{ice} g(\mathbf{X},t) \, d\mathbf{X} \sim \sum_{n=1}^{ncat} a_n(t) \over \int_t \int_{cell} d\mathbf{X} \, dt}.
+   a_{ice}(t) = {\int_{ice} g(\mathbf{X},t) \, d\mathbf{X} \over \int_t \int_{cell} d\mathbf{X} \, dt} \sim \sum_{n=1}^{ncat} a_n(t).
 
 
 The time-averaged ice area over an interval of length :math:`N\Delta t` is
@@ -121,10 +121,10 @@ and the time-averaged ice area fraction is
                  \sim {\sum_{\Delta t} \sum_{n=1}^{ncat} a_n \, A \Delta t \over A \, N \, \Delta t}
                  = {1 \over N} \sum_{\Delta t} \sum_{n=1}^{ncat} a_n.
 
- Ice volume
- ~~~~~~~~~~~~~~~~~
+Ice volume
+~~~~~~~~~~~~~~~~~
 
- Likewise for time averages of ice volume (:math:`m^3`),
+Likewise for time averages of ice volume (:math:`m^3`),
 
 .. math::
    \bar{V}_{i} = {\int_t \int_{cell} \int_{0}^{h} g(\mathbf{X},t) \, dz \, d\mathbf{X} \, dt \over \int_{t} dt}
@@ -184,6 +184,7 @@ Care is required for tracers averaged over the cell:
 
 .. math::
    \bar{T}_{cell} = {\int_t \int_{cell} T(\mathbf{X},t) g(\mathbf{X},t) \, d\mathbf{X} \, dt \over \int_{t} \int_{ice} g(\mathbf{X},t) \, d\mathbf{X} \, dt}
+                  \sim {\sum_{\Delta t} \left( T_o \, a_o + \sum_{n=1}^{ncat} T_n \, a_n \right) A \, \Delta t \over \left( a_o + \sum_{n=1}^{ncat} a_n \right) A \, N \, \Delta t}
 
    
 if there is not open water, :math:`a_o=0`.
