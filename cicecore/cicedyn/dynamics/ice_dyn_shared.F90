@@ -14,7 +14,7 @@
       use ice_constants, only: c0, c1, c2, c3, c4, c6, c1p5
       use ice_constants, only: omega, spval_dbl, p01, p001, p5
       use ice_blocks, only: nx_block, ny_block
-      use ice_domain_size, only: max_blocks
+      use ice_domain_size, only: max_blocks, ncat
       use ice_fileunits, only: nu_diag
       use ice_exit, only: abort_ice
       use ice_grid, only: grid_ice
@@ -170,6 +170,20 @@
          module procedure unstack_fields5
       end interface
 
+      real (kind=dbl_kind), dimension(:,:,:), allocatable, public :: &
+         aice_dyn, aice_dyn_init, aice0_dyn, vice_dyn, vsno_dyn
+
+      real (kind=dbl_kind), dimension(:,:,:,:), allocatable, public :: &
+         aicen_dyn, vicen_dyn
+
+      integer (kind=int_kind) , parameter, public :: init_logical = 3
+      ! Hardcoded
+      ! 0: original
+      ! 1: original - stop if umask and not tmask
+      ! 2: all init (e.g aice_init)
+      ! 3: all  current (e.g aice)
+
+
 !=======================================================================
 
       contains
@@ -256,6 +270,19 @@
          fcorE_blk   = c0
          fcorN_blk   = c0
       endif
+
+      ! Needed to test if all should be aice vs aice_init and vice vs
+      ! vice_init
+
+         allocate( aice_dyn     (nx_block,ny_block     ,max_blocks), &
+                   aice_dyn_init(nx_block,ny_block     ,max_blocks), &
+                   vice_dyn     (nx_block,ny_block     ,max_blocks), &
+                   vsno_dyn     (nx_block,ny_block     ,max_blocks), &
+                   aice0_dyn    (nx_block,ny_block     ,max_blocks), &
+                   aicen_dyn    (nx_block,ny_block,ncat,max_blocks), &
+                   vicen_dyn    (nx_block,ny_block,ncat,max_blocks), &
+                   stat=ierr)
+         if (ierr/=0) call abort_ice(subname//' ERROR: Out of memory ratio')
 
       end subroutine alloc_dyn_shared
 
@@ -785,6 +812,23 @@
          vvel_init(i,j) = vvel(i,j)
       enddo
       enddo
+      !TILL DUMP and abort if umask true and not tmask
+      if (init_logical > 0) then
+        do j = jlo, jhi
+        do i = ilo, ihi
+           if ( (iceXmask(i,j)) .and. ( .not. (iceTmask(i,j)))) then
+              write(nu_diag,*) 'ilo jlo,,ihi, jhi, i j'
+              write(nu_diag,'(6I5)') ilo, jlo, ihi, jhi, i, j
+              write(nu_diag,*) 'iceXmask(i,j), iceTmask(i,j), Xmask(i,j)'
+              write(nu_diag,*)  iceXmask(i,j), iceTmask(i,j), Xmask(i,j)
+              call flush(nu_diag)
+              call abort_ice('ERROR umask not TMASK', &
+                 file=__FILE__, line=__LINE__)
+           endif
+        enddo
+        enddo
+      endif
+! END TILL DUMP
 
       !-----------------------------------------------------------------
       ! Define variables for momentum equation

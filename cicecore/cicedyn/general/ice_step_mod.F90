@@ -59,8 +59,12 @@
       subroutine save_init
 ! saves initial values for aice, aicen, vicen, vsnon
 
-      use ice_state, only: aice, aicen, aice_init, aicen_init, &
-         vicen, vicen_init, vsnon, vsnon_init, trcrn, Tsfcn_init
+!      use ice_state, only: aice, aicen, aice_init, aicen_init, &
+!         vicen, vicen_init, vsnon, vsnon_init, trcrn, Tsfcn_init, &
+!         vice, vice_init, vsno, vsno_init
+      use ice_state, only: aice, aice0,aicen,vice,vicen,vsno,vsnon,&
+              trcrn, aice_init,aice0_init, aicen_init,             &
+              vice_init, vsno_init, vicen_init, vsnon_init, Tsfcn_init
 
       integer (kind=int_kind) :: &
          nt_Tsfc   ! Tsfc index in trcrn
@@ -76,6 +80,9 @@
          call icepack_query_tracer_indices(nt_Tsfc_out=nt_Tsfc)
 
           aice_init = aice
+          aice0_init= aice0
+          vice_init = vice
+          vsno_init = vsno
          aicen_init = aicen
          vicen_init = vicen
          vsnon_init = vsnon

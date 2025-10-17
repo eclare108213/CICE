@@ -109,7 +109,9 @@
           seabed_stress_factor_LKD, seabed_stress_factor_prob, &
           seabed_stress_method, seabed_stress, &
           stack_fields, unstack_fields, iceTmask, iceUmask, &
-          fld2, fld3, fld4, dxhy, dyhx, cxp, cyp, cxm, cym
+          fld2, fld3, fld4, dxhy, dyhx, cxp, cyp, cxm, cym, &
+          aice_dyn, aice_dyn_init, aice0_dyn, vice_dyn, vsno_dyn, &
+          aicen_dyn, vicen_dyn, init_logical
       use ice_flux, only: rdg_conv, strairxT, strairyT, &
           strairxU, strairyU, uocn, vocn, ss_tltx, ss_tlty, fmU, &
           strtltxU, strtltyU, strocnxU, strocnyU, strintxU, strintyU, taubxU, taubyU, &
@@ -123,7 +125,8 @@
           grid_atm_dynu, grid_atm_dynv, grid_ocn_dynu, grid_ocn_dynv
       use ice_restoring, only: ice_restoring_halo
       use ice_state, only: aice, aiU, vice, vsno, uvel, vvel, divu, shear, vort, &
-          aice_init, aice0, aicen, vicen, strength
+          aice_init, aice0, aicen, vicen, strength, &
+          vice_init, vsno_init, aicen_init, vicen_init, aice0_init
       use ice_timers, only: timer_dynamics, timer_bound, &
           ice_timer_start, ice_timer_stop
 
@@ -187,6 +190,39 @@
 
        ! This call is needed only if dt changes during runtime.
 !      call set_evp_parameters (dt)
+      if ( init_logical == 0 ) then
+          aice_dyn      = aice
+          aice_dyn_init = aice_init
+          aice0_dyn     = aice0
+          vice_dyn      = vice
+          vsno_dyn      = vsno
+          aicen_dyn     = aicen
+          vicen_dyn     = vicen
+      elseif ( init_logical == 1 ) then
+          aice_dyn      = aice
+          aice_dyn_init = aice_init
+          aice0_dyn     = aice0
+          vice_dyn      = vice
+          vsno_dyn      = vsno
+          aicen_dyn     = aicen
+          vicen_dyn     = vicen
+      elseif ( init_logical == 2 ) then
+          aice_dyn      = aice_init
+          aice_dyn_init = aice_init
+          aice0_dyn     = aice0_init
+          vice_dyn      = vice_init
+          vsno_dyn      = vsno_init
+          aicen_dyn     = aicen_init
+          vicen_dyn     = vicen_init
+      elseif ( init_logical == 3 ) then
+          aice_dyn      = aice
+          aice_dyn_init = aice
+          aice0_dyn     = aice0
+          vice_dyn      = vice
+          vsno_dyn      = vsno
+          aicen_dyn     = aicen
+          vicen_dyn     = vicen
+      endif
 
       !$OMP PARALLEL DO PRIVATE(iblk,i,j,ilo,ihi,jlo,jhi,this_block) SCHEDULE(runtime)
       do iblk = 1, nblocks
@@ -221,8 +257,8 @@
 
          call dyn_prep1 (nx_block,           ny_block,           &
                          ilo, ihi,           jlo, jhi,           &
-                         aice    (:,:,iblk), vice    (:,:,iblk), &
-                         vsno    (:,:,iblk), tmask   (:,:,iblk), &
+                         aice_dyn(:,:,iblk), vice_dyn(:,:,iblk), &
+                         vsno_dyn(:,:,iblk), tmask   (:,:,iblk), &
                          tmass   (:,:,iblk), iceTmask(:,:,iblk))
 
       enddo                     ! iblk
@@ -237,22 +273,22 @@
       ! convert fields from T to U grid
       !-----------------------------------------------------------------
 
-      call stack_fields(tmass, aice_init, cdn_ocn, fld3)
+      call stack_fields(tmass, aice_dyn_init, cdn_ocn, fld3)
       call ice_HaloUpdate (fld3,             halo_info, &
                            field_loc_center, field_type_scalar)
       call stack_fields(uocn, vocn, ss_tltx, ss_tlty, fld4)
       call ice_HaloUpdate (fld4,             halo_info, &
                            field_loc_center, field_type_vector)
-      call unstack_fields(fld3, tmass, aice_init, cdn_ocn)
+      call unstack_fields(fld3, tmass, aice_dyn_init, cdn_ocn)
       call unstack_fields(fld4, uocn, vocn, ss_tltx, ss_tlty)
 
-      call grid_average_X2Y('S', tmass    , 'T'          , umass   , 'U')
-      call grid_average_X2Y('S', aice_init, 'T'          , aiU     , 'U')
-      call grid_average_X2Y('S', cdn_ocn  , 'T'          , cdn_ocnU, 'U')
-      call grid_average_X2Y('S', uocn     , grid_ocn_dynu, uocnU   , 'U')
-      call grid_average_X2Y('S', vocn     , grid_ocn_dynv, vocnU   , 'U')
-      call grid_average_X2Y('S', ss_tltx  , grid_ocn_dynu, ss_tltxU, 'U')
-      call grid_average_X2Y('S', ss_tlty  , grid_ocn_dynv, ss_tltyU, 'U')
+      call grid_average_X2Y('S', tmass        , 'T'          , umass   , 'U')
+      call grid_average_X2Y('S', aice_dyn_init, 'T'          , aiU     , 'U')
+      call grid_average_X2Y('S', cdn_ocn      , 'T'          , cdn_ocnU, 'U')
+      call grid_average_X2Y('S', uocn         , grid_ocn_dynu, uocnU   , 'U')
+      call grid_average_X2Y('S', vocn         , grid_ocn_dynv, vocnU   , 'U')
+      call grid_average_X2Y('S', ss_tltx      , grid_ocn_dynu, ss_tltxU, 'U')
+      call grid_average_X2Y('S', ss_tlty      , grid_ocn_dynv, ss_tltyU, 'U')
 
       !----------------------------------------------------------------
       ! Set wind stress to values supplied via NEMO or other forcing
@@ -354,12 +390,12 @@
          do ij = 1, icellT(iblk)
             i = indxTi(ij, iblk)
             j = indxTj(ij, iblk)
-            call icepack_ice_strength(aice     = aice    (i,j,  iblk), &
-                                      vice     = vice    (i,j,  iblk), &
-                                      aice0    = aice0   (i,j,  iblk), &
-                                      aicen    = aicen   (i,j,:,iblk), &
-                                      vicen    = vicen   (i,j,:,iblk), &
-                                      strength = strength(i,j,  iblk) )
+            call icepack_ice_strength(aice     = aice_dyn (i,j,  iblk), &
+                                      vice     = vice_dyn (i,j,  iblk), &
+                                      aice0    = aice0_dyn(i,j,  iblk), &
+                                      aicen    = aicen_dyn(i,j,:,iblk), &
+                                      vicen    = vicen_dyn(i,j,:,iblk), &
+                                      strength = strength (i,j,  iblk)  )
          enddo  ! ij
       enddo  ! iblk
       !$OMP END PARALLEL DO
@@ -396,22 +432,22 @@
          if ( seabed_stress_method == 'LKD' ) then
             !$OMP PARALLEL DO PRIVATE(iblk)  SCHEDULE(runtime)
             do iblk = 1, nblocks
-               call seabed_stress_factor_LKD (nx_block        , ny_block      , &
-                                              icellU    (iblk),                 &
-                                              indxUi  (:,iblk), indxUj(:,iblk), &
-                                              vice  (:,:,iblk), aice(:,:,iblk), &
-                                              hwater(:,:,iblk), TbU (:,:,iblk))
+               call seabed_stress_factor_LKD (nx_block          , ny_block          , &
+                                              icellU      (iblk),                     &
+                                              indxUi    (:,iblk), indxUj    (:,iblk), &
+                                              vice_dyn(:,:,iblk),aice_dyn (:,:,iblk), &
+                                              hwater  (:,:,iblk), TbU     (:,:,iblk))
             enddo
             !$OMP END PARALLEL DO
 
          elseif ( seabed_stress_method == 'probabilistic' ) then
             !$OMP PARALLEL DO PRIVATE(iblk) SCHEDULE(runtime)
             do iblk = 1, nblocks
-               call seabed_stress_factor_prob (nx_block         , ny_block         , &
-                                               icellT(iblk), indxTi(:,iblk), indxTj(:,iblk), &
-                                               icellU(iblk), indxUi(:,iblk), indxUj(:,iblk), &
-                                               aicen(:,:,:,iblk), vicen(:,:,:,iblk), &
-                                               hwater (:,:,iblk), TbU    (:,:,iblk))
+               call seabed_stress_factor_prob (nx_block             , ny_block             ,                 &
+                                               icellT         (iblk), indxTi       (:,iblk), indxTj(:,iblk), &
+                                               icellU         (iblk), indxUi       (:,iblk), indxUj(:,iblk), &
+                                               aicen_dyn(:,:,:,iblk), vicen_dyn(:,:,:,iblk),                 &
+                                               hwater     (:,:,iblk), TbU        (:,:,iblk) )
             enddo
             !$OMP END PARALLEL DO
          endif
@@ -559,7 +595,7 @@
       use ice_blocks, only: nx_block, ny_block
       use ice_domain, only: nblocks
       use ice_calendar, only: dt_dyn
-      use ice_dyn_shared, only: init_dyn_shared
+      use ice_dyn_shared, only: init_dyn_shared, init_logical
 
       ! local variables
 
@@ -720,6 +756,22 @@
 
       invstressconviso = c1/(c1+kfriction*kfriction)
       invsin = c1/sin(pi2/c12) * invstressconviso
+
+      if ( init_logical == 0 ) then
+        if (my_task == master_task) &
+        write (nu_diag,*) 'Init logical is 0: standard'
+      elseif (init_logical == 1) then
+        if (my_task == master_task) &
+        write (nu_diag,*) 'Init logical is 1: standard - stop for umask'
+      elseif ( init_logical == 2 ) then
+        if (my_task == master_task) &
+        write (nu_diag,*) 'Init logical is 2, Start of ts'
+      elseif ( init_logical == 3 ) then
+        if (my_task == master_task) &
+        write (nu_diag,*) 'Init logical is 3, Start of dyn'
+      else
+        call abort_ice('Init_logical is invalid. Must be 0, 1, 2 or 3')
+      endif
 
       end subroutine init_eap
 

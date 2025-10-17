@@ -118,7 +118,10 @@
       !-----------------------------------------------------------------
 
       real (kind=dbl_kind), dimension(:,:,:), allocatable, public :: &
-         aice_init       ! initial concentration of ice, for diagnostics
+         aice_init   , &  ! initial concentration of ice, for diagnostics, and dynamics 
+         vice_init   , &  ! Only used in dynamics.
+         vsno_init   , &  ! Only used in dynamics.
+         aice0_init       ! Only used in dynamics.
 
       real (kind=dbl_kind), dimension(:,:,:,:), allocatable, public :: &
          aicen_init  , & ! initial ice concentration, for linear ITD
@@ -159,7 +162,10 @@
          shear     (nx_block,ny_block,max_blocks) , & ! strain rate II component (1/s)
          vort      (nx_block,ny_block,max_blocks) , & ! vorticity (1/s)
          strength  (nx_block,ny_block,max_blocks) , & ! ice strength (N/m)
-         aice_init (nx_block,ny_block,max_blocks) , & ! initial concentration of ice, for diagnostics
+         aice_init (nx_block,ny_block,max_blocks) , & ! initial concentration of ice, for diagnostics and dynamics
+         vice_init (nx_block,ny_block,max_blocks) , & ! for dynamics
+         vsno_init (nx_block,ny_block,max_blocks) , & ! for dynamics
+         aice0_init(nx_block,ny_block,max_blocks) , & ! for dynamics
          aicen     (nx_block,ny_block,ncat,max_blocks) , & ! concentration of ice
          vicen     (nx_block,ny_block,ncat,max_blocks) , & ! volume per unit area of ice (m)
          vsnon     (nx_block,ny_block,ncat,max_blocks) , & ! volume per unit area of snow (m)
