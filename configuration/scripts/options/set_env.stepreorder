@@ -1,0 +1,2 @@
+setenv ICE_DRVOPT     standalone/stepreorder
+setenv ICE_TARGET     cice

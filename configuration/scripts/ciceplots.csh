@@ -9,7 +9,7 @@
 
 #### User defined ########################################
 
-source ${MODULESHOME}/init/csh
+#source ${MODULESHOME}/init/csh
 
 # Set plot type (box, global, timeseries)
 # Set case and case directory
@@ -26,14 +26,14 @@ echo "plottimeseries = ${plottimeseries}"
 
 if ( ${plotgrid} == 'global' ) then
 
-set case = "CICE6.5.1"
-set casedir = "/glade/derecho/scratch/tcraig/CICE_RUNS/cgx1proda"
+set case = "CICEbaseline"
+set casedir = "/Users/eclare/cice-dirs/runs/conda_macos_smoke_gx3_4x2_diag24_jra55do_long_run1year.CICE6.6.3"
 set histdir = "${casedir}/history"
 
-set files = ("${histdir}/iceh.2012-03.nc" \
-             "${histdir}/iceh.2012-09.nc" )
-set notes = ("2012 March Mean" \
-             "2012 Sept Mean" )
+set files = ("${histdir}/iceh.2005-03.nc" \
+             "${histdir}/iceh.2005-09.nc" )
+set notes = ("2005 March Mean" \
+             "2005 Sept Mean" )
 set fstrs = ("Mar12" \
              "Sep12" )
 
@@ -105,12 +105,14 @@ if ( ${plotgrid} == 'global' ) then
 #conda config --add channels conda-forge
 #conda config --set channel_priority strict
 #conda search basemap --channel conda-forge
-#conda create -p /glade/u/home/tcraig/conda/envs/basemap -c conda-forge basemap=1.4.1 basemap-data basemap-data-hires netCDF4
+##conda create -p /glade/u/home/tcraig/conda/envs/basemap -c conda-forge basemap=1.4.1 basemap-data basemap-data-hires netCDF4
+#conda create -p /Users/eclare/CICE/basemap -c conda-forge basemap=1.4.1 basemap-data basemap-data-hires netCDF4
 
-module load conda
-source ${NCAR_ROOT_CONDA}/etc/profile.d/conda.csh
+#module load conda
+#source ${NCAR_ROOT_CONDA}/etc/profile.d/conda.csh
 
-conda activate /glade/u/home/tcraig/conda/envs/basemap
+#conda activate /glade/u/home/tcraig/conda/envs/basemap
+conda activate /Users/eclare/CICE/basemap
 
 set cnt = 0
 while ($cnt < ${#files})
