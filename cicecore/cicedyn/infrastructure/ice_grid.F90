@@ -1724,12 +1724,12 @@
       if (my_task == master_task) then
          allocate( &
             work_mom(nx_global*2+1, ny_global*2+1), &
-            work_gE(nx_global+1,ny_global+1)      , &
-            work_gN(nx_global+1,ny_global+1)      , &
+            work_gE(nx_global+1,ny_global+1)      , & !include left and top
+            work_gN(nx_global+1,ny_global+1)      , & !include right and top
             G_ULAT(nx_global+1,ny_global+1)       , & !include left and bottom
             G_TLAT(nx_global+1,ny_global+1)       , & !include top and right
-            G_TLON(nx_global+1,ny_global+1)       , & !include left and bottom
-            G_ULON(nx_global+1,ny_global+1)       , & !include top and right
+            G_TLON(nx_global+1,ny_global+1)       , & !include top and right
+            G_ULON(nx_global+1,ny_global+1)       , & !include left and bottom
             stat = ierr &
          )
       else
@@ -1745,9 +1745,9 @@
       call mom_corners_global(work_mom, G_ULAT, G_TLAT, work_gE, work_gN)
       ! create bounds fields for cf-compliant output
       call mom_bounds(G_ULAT, latt_bounds) ! u points define corners for t-cells
-      call mom_bounds(G_TLAT, latu_bounds)
-      call mom_bounds(work_gN, late_bounds)
-      call mom_bounds(work_gE, latn_bounds)
+      call mom_bounds(G_TLAT, latu_bounds) ! t points define corners for u-cells
+      call mom_bounds(work_gN, late_bounds) ! n points define corners for e-cells
+      call mom_bounds(work_gE, latn_bounds) ! e points define corners for n-cells
       !distribute global array to local
       call mom_corners_scatter(G_ULAT, G_TLAT, work_gE, work_gN, &
                           ULAT, TLAT, ELAT, NLAT)
@@ -1891,29 +1891,48 @@
          enddo
          select case (trim(ew_boundary_type))
             case('cyclic')
-               G_T(nx_global+1,:) = G_T(1,:)
+               G_T(nx_global+1,1:ny_global) = G_T(1,1:ny_global)
                G_N(nx_global+1,:) = G_N(1,:)
             case('open','zero_gradient','linear_extrap')
-               do j=1, ny_global+1
+               do j=1, ny_global
                   G_T(nx_global+1,j) = 2 * G_T(nx_global, j) - G_T(nx_global-1, j)
                   G_N(nx_global+1,j) = 2 * G_N(nx_global, j) - G_N(nx_global-1, j)
                enddo
+            case default
+               call abort_ice(subname//' ERROR: unsupported e-w bndy type - '// &
+                  trim(ew_boundary_type), file=__FILE__, line=__LINE__)
          end select
 
-         ! fill last row
+         ! fill last row for U & N from top of mom supergrid
          im1 = 1 ; im2 = 2
-         do i = 1, nx_global+1
+         do i = 1, nx_global
             G_U(i,ny_global + 1) = work_mom(im1, 2*ny_global+1)
             G_N(i,ny_global + 1) = work_mom(im2, 2*ny_global+1)
             im1 = im1 + 2
+            im2 = im2 + 2
          enddo
-         select case (trim(ns_boundary_type))
-            case('tripole')
-               do i = 1, nx_global+1
-                  G_T(i,ny_global+1) = G_T(nx_global+1-i, ny_global)
-                  G_E(i,ny_global+1) = G_E(nx_global+1-i, ny_global)
-               enddo
+         ! top right corner for U,N
+         G_U(nx_global + 1,ny_global + 1) = work_mom(2*nx_global + 1, 2*ny_global+1)
+         select case (trim(ew_boundary_type))
             case('cyclic')
+               G_N(nx_global + 1,ny_global + 1) = G_N(1,ny_global + 1)
+            case('open')
+               G_N(nx_global + 1,ny_global + 1) = 2 * G_N(nx_global, ny_global + 1) - G_N(nx_global-1, ny_global + 1)
+         end select
+
+         ! fill last row for E & T using n-s boundary type
+         select case (trim(ns_boundary_type))
+            case ('tripole')
+               G_T(1:nx_global,ny_global+1) = G_T(nx_global:1:-1, ny_global)
+               ! fill top right corner, this is a special case for tripole, other cases are set above
+               select case (trim(ew_boundary_type))
+                  case('cyclic')
+                     G_T(nx_global+1,ny_global+1) = G_T(1,ny_global+1)
+                  case('open')
+                     G_T(nx_global+1,ny_global+1) = 2 * G_T(nx_global, ny_global+1) - G_T(nx_global-1, ny_global+1)
+               end select
+               G_E(1:nx_global+1,ny_global+1) = G_E(nx_global+1:1:-1, ny_global)
+            case ('cyclic')
                G_T(:,ny_global+1) = G_T(:,1)
                G_E(:,ny_global+1) = G_E(:,1)
             case('open','zero_gradient','linear_extrap')
@@ -1921,6 +1940,9 @@
                   G_T(i,ny_global+1) = 2 * G_T(i, ny_global) - G_T(i, ny_global-1)
                   G_E(i,ny_global+1) = 2 * G_E(i, ny_global) - G_E(i, ny_global-1)
                enddo
+            case default
+               call abort_ice(subname//' ERROR: unsupported n-s bndy type - '// &
+                  trim(ns_boundary_type), file=__FILE__, line=__LINE__)
          end select
 
       endif
@@ -2372,7 +2394,8 @@
       subroutine mom_grid_rotation_angle(lon_cnr, lat_cnr, lon_cen, angle)
       !  create angles in the same way mom6 creates the angle
       !  based on https://github.com/mom-ocean/MOM6/blob/129e1bda02d454fb280819d1d87ae16347fd044c/src/initialization/MOM_shared_initialization.F90#L535
-      !  the angle is between logical north on the grid and true north.
+      !  the angle is between logical north on the grid and true north
+      !  positive angles are counter-clockwise relative to true north in CICE
 
       ! global lat/lons/angles
       real (kind=dbl_kind), dimension(:,:), intent(in) :: &
@@ -2386,13 +2409,19 @@
          lon_scale, &  ! The trigonometric scaling factor converting changes in longitude to equivalent distances in latitudes [nondim]
          len_lon, &
          lon_adj, &
-         lonB(2,2)
+         lonB(2,2), &
+         pi
       integer (kind=int_kind) :: i, j, m, n
 
       character(len=*), parameter :: subname = '(mom_grid_rotation_angle)'
 
+      call icepack_query_parameters(pi_out=pi)
+      call icepack_warnings_flush(nu_diag)
+      if (icepack_warnings_aborted()) call abort_ice(error_message=subname, &
+         file=__FILE__, line=__LINE__)
+
       if (my_task == master_task) then
-         len_lon = maxval(lon_cnr)-minval(lon_cnr)  ! The periodic range of longitudes, usually 2pi.
+         len_lon = c2*pi  ! The periodic range of longitudes
 
          do j=1,ny_global
             do i=1,nx_global
@@ -2404,7 +2433,7 @@
                                     + lon_adj
                enddo ; enddo
                lon_scale = cos(p25*(lat_cnr(I,J) + lat_cnr(I+1,J+1) + lat_cnr(I+1,J) + lat_cnr(I,J+1)))
-               angle(i,j) = atan2(lon_scale*((lonB(1,2) - lonB(2,1) + lonB(2,2) - lonB(1,1))), &
+               angle(i,j) = -c1 * atan2(lon_scale*((lonB(1,2) - lonB(2,1) + lonB(2,2) - lonB(1,1))), &
                            (lat_cnr(I,J+1) - lat_cnr(I+1,J) + lat_cnr(I+1,J+1) - lat_cnr(I,J)) )
             enddo
          enddo
