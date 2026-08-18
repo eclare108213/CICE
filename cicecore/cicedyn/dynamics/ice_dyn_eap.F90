@@ -1614,7 +1614,7 @@
          sgprm11, sgprm12, sgprm22, &
          Angle_denom_gamma,  Angle_denom_alpha, &
          Tany_1, Tany_2, &
-         x, y, dx, dy, da, &
+         x, y, dx, &
          dtemp1, dtemp2, atempprime, &
          kxw, kyw, kaw
 

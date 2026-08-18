@@ -78,7 +78,6 @@
       use ice_state, only: trcr_depend
       use ice_timers, only: ice_timer_start, ice_timer_stop, timer_advect
       use ice_transport_remap, only: init_remap
-      use ice_grid, only: grid_ice
 
       integer (kind=int_kind) ::       &
          k, nt, nt1     ! tracer indices

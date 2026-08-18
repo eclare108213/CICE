@@ -1083,8 +1083,6 @@
 #endif
 
       integer (kind=int_kind) :: &
-         i, j, iblk, &
-         ilo,ihi,jlo,jhi, &     ! beginning and end of physical domain
          fid_grid , &           ! file id for netCDF grid file
          ierr
 
@@ -2130,7 +2128,7 @@
 
       integer (kind=int_kind) :: &
          i, j, &
-         im1, im2, jm1, jm2, im3, jm3 , &  ! i & j for mom supergrid
+         im1, im2, jm1, jm2, jm3, &  ! i & j for mom supergrid
          ierr
 
       character(len=*), parameter :: subname = '(mom_dy)'
@@ -2429,18 +2427,14 @@
 
       subroutine geosgrid_nc
 
-      use ice_blocks, only: nx_block, ny_block
-      use ice_constants, only: c0, c1, &
+      use ice_constants, only: &
           field_loc_center, field_loc_NEcorner, &
           field_type_scalar, field_type_angle
-      use ice_domain_size, only: max_blocks
 #ifdef USE_NETCDF
       use netcdf
 #endif
 
       integer (kind=int_kind) :: &
-         i, j, iblk, &
-         ilo,ihi,jlo,jhi, &    ! beginning and end of physical domain
          fid_grid              ! file id for netCDF grid file
 
       logical (kind=log_kind) :: diag
@@ -2453,9 +2447,6 @@
 
       real (kind=dbl_kind), dimension(:,:), allocatable :: &
          work_g1
-
-      type (block) :: &
-         this_block            ! block information for current block
 
       integer(kind=int_kind) :: &
          varid
@@ -2776,8 +2767,7 @@
         ! extend spacing from center of grid outward.
 
         integer (kind=int_kind) :: &
-             i, j, iblk, &
-             imid, jmid, &
+             i, j, &
              center1, center2 ! array centers for expanding dx, dy
 
         real (kind=dbl_kind) :: &
@@ -3617,8 +3607,8 @@
 
       subroutine NElatlon
 
-      use ice_constants, only: c0, c1, c1p5, c2, c4, p5, &
-          field_loc_center, field_loc_Nface, field_loc_Eface, &
+      use ice_constants, only: c0, c1, c1p5, c2, p5, &
+          field_loc_Nface, field_loc_Eface, &
           field_type_scalar
 
       integer (kind=int_kind) :: &

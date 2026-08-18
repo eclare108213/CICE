@@ -120,8 +120,7 @@
 
    integer (int_kind) :: &
       n, &                  ! counter
-      nml_error, &          ! namelist read error flag
-      nprocs_x, nprocs_y    ! procs decomposed into blocks
+      nml_error             ! namelist read error flag
 
    character(len=char_len)      :: nml_name ! text namelist name
    character(len=char_len_long) :: tmpstr2 ! for namelist check
@@ -395,8 +394,6 @@
    integer (int_kind), dimension (nx_global, ny_global) :: &
       flat                 ! latitude-dependent scaling factor
 
-   character (char_len) :: outstring
-
    integer (int_kind), parameter :: &
       max_work_unit=10    ! quantize the work into values from 1,max
 
@@ -413,7 +410,6 @@
       status             ,&! netcdf return code
 #endif
       tblocks_tmp        ,&! total number of blocks
-      nblocks_tmp        ,&! temporary value of nblocks
       nblocks_max          ! max blocks on proc
 
    real (dbl_kind) :: &

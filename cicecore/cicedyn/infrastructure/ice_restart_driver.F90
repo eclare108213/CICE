@@ -1195,21 +1195,18 @@
 
       subroutine direct_adjust_aice(test)
 
-        use ice_blocks, only: nghost, nx_block, ny_block
+        use ice_blocks, only: nx_block, ny_block
         use ice_domain, only: nblocks
         use ice_domain_size, only: nilyr, nslyr, ncat, max_blocks
         use ice_grid, only: tmask
         use ice_communicate, only: my_task, master_task
-        use ice_constants, only: c0, c1, c4, c20, c100, &
-             p5, p2, p1, p01, p001, &
-             field_loc_center, field_loc_NEcorner, &
-             field_type_scalar, field_type_vector
+        use ice_constants, only: c0, c20, &
+             p2, p1, p01, p001, &
+             field_loc_center, &
+             field_type_scalar
         use ice_fileunits, only: nu_diag
         use ice_flux, only:  &
-             Tair, Tf, salinz, Tmltz, sst,                  &
-             stressp_1, stressp_2, stressp_3, stressp_4,    &
-             stressm_1, stressm_2, stressm_3, stressm_4,    &
-             stress12_1, stress12_2, stress12_3, stress12_4
+             Tair, Tf, salinz, Tmltz, sst
         use ice_state, only:  &
              aice, aicen, vicen, vsnon, trcrn
         use ice_read_write, only: ice_check_nc, ice_read_nc, &
@@ -1228,7 +1225,6 @@
              aice_o,    & ! observation aice
              aice_t,    & ! target aice
              aice_i,    & ! insert ice
-             slope,     & ! used to compute surf Temp
              Ti,        & ! target surface temperature
              edge_om,   & ! nominal ice edge zone
              diff_om,   & ! allowed model vs obs difference

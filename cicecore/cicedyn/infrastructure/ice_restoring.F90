@@ -290,8 +290,6 @@
    subroutine ice_restoring_data_restartfiles
 
       use ice_calendar, only: msec, mday, mmonth, myear
-      use ice_constants, only: field_loc_center, field_loc_necorner, &
-          field_type_scalar, field_type_vector
       use ice_read_write, only: ice_read_nc, ice_open_nc, ice_close_nc
 
       integer(kind=int_kind) :: &
@@ -498,8 +496,7 @@
          nt_fbri           , & !
          nt_qice           , & !
          nt_sice           , & !
-         nt_qsno           , & !
-         icells                ! number of cells initialized with ice
+         nt_qsno               !
 
       type (block) :: &
          this_block           ! block info for current block
