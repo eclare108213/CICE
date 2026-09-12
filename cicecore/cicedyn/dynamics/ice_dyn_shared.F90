@@ -682,7 +682,7 @@
 
       real (kind=dbl_kind), dimension (nx_block,ny_block), intent(inout), &
            optional :: &
-         rheofactX   ! mult. factor = 1, set to 0 if aiU <= rheo_area_min
+         rheofactX   ! 1, except 0 where aiU <= rheo_area_min
 
       ! local variables
 
@@ -855,7 +855,7 @@
                         taubx,      tauby,    &
                         uvel_init,  vvel_init,&
                         uvel,       vvel,     &
-                        TbU)
+                        TbU,        rheofactU)
 
       integer (kind=int_kind), intent(in) :: &
          nx_block, ny_block, & ! block dimensions
@@ -878,7 +878,8 @@
          uocn    , & ! ocean current, x-direction (m/s)
          vocn    , & ! ocean current, y-direction (m/s)
          fm      , & ! Coriolis param. * mass in U-cell (kg/s)
-         uarear      ! 1/uarea
+         uarear  , & ! 1/uarea
+         rheofactU   ! 1, except 0 where aiU <= rheo_area_min
 
       real (kind=dbl_kind), dimension(nx_block,ny_block,8), intent(in) :: &
          str         ! temporary
@@ -943,9 +944,9 @@
          ab2 = cca**2 + ccb**2
 
          ! divergence of the internal stress tensor
-         strintx(i,j) = uarear(i,j)* &
+         strintx(i,j) = rheofactU(i,j) * uarear(i,j) * &
              (str(i,j,1) + str(i+1,j,2) + str(i,j+1,3) + str(i+1,j+1,4))
-         strinty(i,j) = uarear(i,j)* &
+         strinty(i,j) = rheofactU(i,j) * uarear(i,j) * &
              (str(i,j,5) + str(i,j+1,6) + str(i+1,j,7) + str(i+1,j+1,8))
 
          ! finally, the velocity components
