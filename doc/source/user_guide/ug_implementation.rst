@@ -1202,6 +1202,12 @@ relaxation parameter ``arlx1i`` effectively sets the damping timescale in
 the problem, and ``brlx`` represents the effective subcycling
 :cite:`Bouillon13` (see Section :ref:`revp`).
 
+An option (``free_drift_approx`` = true) sets the internal stress term in the
+momentum equation to zero in cells where the ice area fraction is less than
+``rheo_area_min = 1.e-3``, well below the area fraction at which the ice should
+begin experiencing free drift. This approximation is turned on by default for
+EVP discretizations for C- and CD-grids, and is also available for B-grids.
+
 .. _modelio:
 
 ~~~~~~~~~~~~~~~~~~~~~~~~

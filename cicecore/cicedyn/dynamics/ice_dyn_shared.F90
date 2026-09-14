@@ -44,7 +44,8 @@
          ssh_stress     ! 'geostrophic' or 'coupled'
 
       logical (kind=log_kind), public :: &
-         revised_evp    ! if true, use revised evp procedure
+         revised_evp, & ! if true, use revised evp procedure
+         free_drift_approx ! if true, set internal stress to 0 for small areas
 
       character (len=char_len), public :: &
          evp_algorithm  ! standard_2d = 2D org version (standard)
@@ -801,7 +802,7 @@
          i = indxXi(ij)
          j = indxXj(ij)
 
-         if (present(rheofactX)) then
+         if (free_drift_approx .and. present(rheofactX)) then
             if ( aiX (i,j) > rheo_area_min ) then
                rheofactX(i,j) = c1
             else

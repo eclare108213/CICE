@@ -173,6 +173,8 @@
                 stat=ierr)
       if (ierr/=0) call abort_ice(subname//' ERROR: Out of memory B-Grid evp')
 
+      rheofactU(:,:,:) = c1
+
       if (grid_ice == 'CD' .or. grid_ice == 'C') then
 
          allocate( strengthU(nx_block,ny_block,max_blocks), &
@@ -203,6 +205,8 @@
                    stat=ierr)
          if (ierr/=0) call abort_ice(subname//' ERROR: Out of memory N evp')
 
+         rheofactN(:,:,:) = c1
+
          allocate( uocnE    (nx_block,ny_block,max_blocks), &
                    vocnE    (nx_block,ny_block,max_blocks), &
                    ss_tltxE (nx_block,ny_block,max_blocks), &
@@ -218,6 +222,8 @@
                    rheofactE(nx_block,ny_block,max_blocks), &
                    stat=ierr)
          if (ierr/=0) call abort_ice(subname//' ERROR: Out of memory E evp')
+
+         rheofactE(:,:,:) = c1
 
          allocate( ratiodxN (nx_block,ny_block,max_blocks), &
                    ratiodyE (nx_block,ny_block,max_blocks), &
