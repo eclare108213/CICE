@@ -1478,8 +1478,8 @@
 
       if ((kdyn == 2 .or. kdyn == 3) .and. free_drift_approx) then
          if (my_task == master_task) then
-            write(nu_diag,*) subname//' WARNING: free_drift_approx = T with EAP or VP dynamics'
-            write(nu_diag,*) subname//' WARNING:   free_drift_approx must be F'
+            write(nu_diag,*) subname//' ERROR: free_drift_approx = T with EAP or VP dynamics'
+            write(nu_diag,*) subname//' ERROR:   free_drift_approx must be F'
          endif
          abort_list = trim(abort_list)//":69"
       endif
@@ -1561,8 +1561,8 @@
          endif
          if (.not. free_drift_approx) then
             if (my_task == master_task) then
-               write(nu_diag,*) subname//' WARNING: free_drift_approx = F with C or CD grid'
-               write(nu_diag,*) subname//' WARNING: free_drift_approx should be T'
+               write(nu_diag,*) subname//' ERROR: free_drift_approx = F with C or CD grid'
+               write(nu_diag,*) subname//' ERROR: free_drift_approx should be T'
             endif
             abort_list = trim(abort_list)//":70"
          endif
