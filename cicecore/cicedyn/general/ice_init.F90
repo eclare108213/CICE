@@ -1479,7 +1479,7 @@
       if ((kdyn == 2 .or. kdyn == 3) .and. free_drift_approx) then
          if (my_task == master_task) then
             write(nu_diag,*) subname//' WARNING: free_drift_approx = T with EAP or VP dynamics'
-            write(nu_diag,*) subname//' WARNING:   free_drift_approx must by F'
+            write(nu_diag,*) subname//' WARNING:   free_drift_approx must be F'
          endif
          abort_list = trim(abort_list)//":69"
       endif
@@ -1558,6 +1558,13 @@
                write(nu_diag,*) subname//' ERROR: visc_method should be avg_zeta or avg_strength'
             endif
             abort_list = trim(abort_list)//":44"
+         endif
+         if (.not. free_drift_approx) then
+            if (my_task == master_task) then
+               write(nu_diag,*) subname//' WARNING: free_drift_approx = F with C or CD grid'
+               write(nu_diag,*) subname//' WARNING: free_drift_approx should be T'
+            endif
+            abort_list = trim(abort_list)//":70"
          endif
       endif
 
